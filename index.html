@@ -2,350 +2,336 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Jabez OS | Portfolio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>JABEZ // SYSTEM</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
     
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* Custom Styles & Animations */
+        /* --- CYBER-BRUTALIST THEME --- */
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-border: rgba(255, 255, 255, 0.15);
-            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --bg-color: #050505;
+            --window-bg: #0a0a0a;
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-yellow: #ffff00;
+            --border-width: 2px;
+            --hard-shadow: 6px 6px 0px;
         }
 
         body {
             margin: 0;
             overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: white;
+            font-family: 'JetBrains Mono', monospace; /* Mono font everywhere */
+            background-color: var(--bg-color);
+            color: var(--neon-cyan);
             user-select: none;
-            /* Prevent rubber-banding on iOS */
             overscroll-behavior: none;
         }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111; border-left: 1px solid #333; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
+        ::-webkit-scrollbar-thumb:hover { background: #d100d1; }
 
         /* Boot Screen */
         #boot-screen {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             z-index: 9999;
-            font-family: 'JetBrains Mono', monospace;
             padding: 2rem;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            color: #00ff00;
+            justify-content: flex-end; /* Terminal text at bottom */
+            color: var(--neon-pink);
+            font-size: 14px;
+            border: 4px solid var(--neon-pink); /* Retro border */
+            box-sizing: border-box;
         }
 
         /* Desktop Environment */
         #desktop {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0; width: 100vw; height: 100vh;
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            transition: opacity 0.5s ease-in-out;
             overflow: hidden;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
         }
 
-        /* Starfield Canvas */
-        #starfield {
+        /* Retro Grid Background */
+        #grid-bg {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            width: 200%;
+            height: 100vh;
+            bottom: -50%; /* Tilt perspective */
+            left: -50%;
+            background-image: 
+                linear-gradient(var(--neon-pink) 1px, transparent 1px),
+                linear-gradient(90deg, var(--neon-pink) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: center bottom;
+            transform: perspective(500px) rotateX(60deg);
+            opacity: 0.15;
             z-index: 0;
+            animation: gridMove 20s linear infinite;
+            pointer-events: none;
         }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
+        }
+
+        #starfield {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;
+            pointer-events: none;
+        }
+
+        /* --- UI ELEMENTS --- */
 
         /* Context Menu */
         #context-menu {
             position: fixed;
-            background: rgba(30, 41, 59, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            width: 200px;
+            background: var(--window-bg);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 4px 4px 0 var(--neon-cyan);
+            min-width: 220px;
             z-index: 9999;
             display: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            padding: 4px;
+            padding: 0;
         }
 
         .ctx-item {
-            padding: 8px 12px;
+            padding: 12px 16px;
             cursor: pointer;
-            border-radius: 4px;
-            font-size: 0.9rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 10px;
-            color: #e2e8f0;
-        }
-
-        .ctx-item:hover {
-            background: rgba(59, 130, 246, 0.8);
+            gap: 12px;
             color: white;
+            text-transform: uppercase;
+            border-bottom: 1px solid #333;
+            transition: all 0.1s;
         }
 
-        .ctx-divider {
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 4px 0;
-        }
+        .ctx-item:last-child { border-bottom: none; }
+        .ctx-item:hover { background: var(--neon-cyan); color: black; }
+        .ctx-item i { width: 20px; text-align: center; }
 
         /* Windows */
         .window {
             position: absolute;
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            box-shadow: var(--glass-shadow);
+            background: var(--window-bg);
+            border: 2px solid var(--neon-pink);
+            box-shadow: var(--hard-shadow) var(--neon-pink);
             display: none;
             flex-direction: column;
             overflow: hidden;
-            transition: opacity 0.2s, transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            /* Removed transition for drag performance, added back in stopDrag */
+            animation: glitchPop 0.2s steps(2);
+        }
+
+        @keyframes glitchPop {
+            0% { transform: scale(0.9) skew(10deg); opacity: 0; }
+            50% { transform: scale(1.02) skew(-5deg); opacity: 1; }
+            100% { transform: scale(1) skew(0); }
         }
 
         .window.maximized {
-            width: 100vw !important;
-            height: calc(100vh - 80px) !important; /* Leave space for taskbar */
-            top: 0 !important;
-            left: 0 !important;
-            border-radius: 0;
+            width: calc(100vw - 8px) !important;
+            height: calc(100vh - 100px) !important; /* Leave space for taskbar */
+            top: 4px !important;
+            left: 4px !important;
+            box-shadow: none !important;
             transform: none !important;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            z-index: 999 !important;
         }
 
         .window-header {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 0.75rem 1rem;
+            background: var(--neon-pink);
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: grab;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            touch-action: none;
+            border-bottom: 2px solid var(--neon-pink);
+            color: black;
+            font-weight: 800;
+            text-transform: uppercase;
+            touch-action: none; /* Critical for dragging on mobile */
+            user-select: none;
         }
 
-        .window-header:active {
-            cursor: grabbing;
-        }
+        .window-header:active { cursor: grabbing; }
 
-        .window-controls {
-            display: flex;
-            gap: 8px;
-        }
+        .window-controls { display: flex; gap: 10px; }
 
-        .control-dot { width: 12px; height: 12px; border-radius: 50%; transition: transform 0.1s;}
-        .control-dot:hover { transform: scale(1.1); }
-        .close-dot { background: #ff5f56; cursor: pointer; }
-        .min-dot { background: #ffbd2e; cursor: pointer; }
-        .max-dot { background: #27c93f; cursor: pointer; }
+        /* Custom Retro Controls */
+        .win-btn {
+            width: 16px; height: 16px;
+            border: 2px solid black;
+            background: white;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        .win-btn:hover { transform: translate(1px, 1px); }
+        .btn-close { background: #ff4444; }
+        .btn-min { background: #ffff00; }
+        .btn-max { background: #00ffff; }
 
         .window-content {
             flex: 1;
             overflow-y: auto;
-            padding: 1.5rem;
-            color: #e2e8f0;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            -webkit-overflow-scrolling: touch; 
+            padding: 20px;
+            color: #eee;
+            background: #080808;
+            position: relative;
         }
-
-        /* Scrollbar */
-        .window-content::-webkit-scrollbar { width: 6px; }
-        .window-content::-webkit-scrollbar-track { background: transparent; }
-        .window-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
-        .window-content::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
-
-        /* Taskbar */
-        #taskbar {
+        
+        /* Scanline effect inside windows */
+        .window-content::before {
+            content: " ";
+            display: block;
             position: absolute;
-            bottom: 24px;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .content-inner { position: relative; z-index: 3; } /* Content sits above scanlines */
+
+        /* Taskbar - Cyberpunk Style */
+        #taskbar-container {
+            position: absolute;
+            bottom: max(1rem, env(safe-area-inset-bottom) + 10px); /* Mobile safe area fix */
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 12px 24px;
+            width: auto;
+            max-width: 95vw;
+            z-index: 10000;
+        }
+
+        #taskbar {
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 4px 4px 0 var(--neon-cyan);
+            padding: 10px 20px;
             display: flex;
-            gap: 1.5rem;
-            z-index: 1000;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 20px;
+            align-items: center;
         }
 
         .app-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+            width: 48px; height: 48px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
-            color: white;
-            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
+            font-size: 1.5rem;
+            color: #555; /* Dimmed by default */
+            border: 2px solid transparent;
             cursor: pointer;
-            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            -webkit-tap-highlight-color: transparent;
+            transition: all 0.2s;
+            position: relative;
         }
 
         .app-icon:hover {
-            transform: scale(1.15) translateY(-15px);
-            background: rgba(255,255,255,0.15);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            z-index: 10;
+            color: var(--neon-cyan);
+            transform: translateY(-4px);
+            text-shadow: 0 0 10px var(--neon-cyan);
         }
 
-        .app-indicator {
-            width: 4px;
-            height: 4px;
-            background-color: white;
-            border-radius: 50%;
-            position: absolute;
-            bottom: 4px;
-            opacity: 0;
-            transition: opacity 0.2s;
-            box-shadow: 0 0 4px rgba(255,255,255,0.8);
+        .app-icon.active {
+            color: var(--neon-pink);
+            border-bottom: 2px solid var(--neon-pink);
         }
 
-        .app-icon.active .app-indicator {
-            opacity: 1;
+        .app-icon.active:hover {
+            color: white;
+            border-bottom-color: white;
         }
 
+        /* Tooltips */
         .app-tooltip {
             position: absolute;
-            top: -45px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
+            top: -50px;
+            background: var(--neon-yellow);
+            color: black;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            border: 2px solid black;
+            box-shadow: 2px 2px 0 black;
             opacity: 0;
-            transition: opacity 0.2s, top 0.2s;
             pointer-events: none;
+            transition: opacity 0.2s;
             white-space: nowrap;
-            border: 1px solid rgba(255,255,255,0.1);
         }
-
-        .app-icon:hover .app-tooltip {
-            opacity: 1;
-            top: -55px;
-        }
+        .app-icon:hover .app-tooltip { opacity: 1; }
 
         /* Notifications */
         #notification-area {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none; /* Let clicks pass through empty space */
+            position: fixed; top: 20px; right: 20px; z-index: 10001;
+            display: flex; flex-direction: column; gap: 10px;
+            pointer-events: none;
         }
 
         .toast {
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 250px;
+            background: black;
+            border: 2px solid var(--neon-yellow);
+            color: var(--neon-yellow);
+            padding: 15px;
+            box-shadow: 4px 4px 0 var(--neon-yellow);
+            font-weight: bold;
+            min-width: 280px;
             transform: translateX(120%);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             pointer-events: auto;
+            display: flex; align-items: center; gap: 10px;
         }
-
-        .toast.show {
-            transform: translateX(0);
-        }
+        .toast.show { transform: translateX(0); }
 
         /* Responsive Fixes */
         @media (max-width: 640px) {
-            /* 1. Mobile Window Sizing */
-            .window { 
-                width: 96vw !important; 
-                height: 85vh !important; 
-                left: 2vw !important; 
-                top: 5vh !important; 
-                transform: none !important;
-            }
+            .window { width: 94vw !important; height: 80vh !important; left: 3vw !important; top: 5vh !important; }
             .window.maximized { width: 100vw !important; height: 100vh !important; top: 0 !important; left: 0 !important; }
-            
-            /* 2. Mobile Taskbar Visibility Fix */
-            #taskbar { 
-                bottom: 8px; /* Lower on the screen for better visibility */
-                padding: 10px 16px; 
-                gap: 0.8rem; 
-                width: auto; 
-                max-width: 98%; 
-                left: 50%;
-                transform: translateX(-50%);
-            }
-            .app-icon { width: 42px; height: 42px; font-size: 1.25rem; }
-            .window-content { padding: 1rem; }
+            #taskbar { padding: 8px 12px; gap: 12px; }
+            .app-icon { width: 36px; height: 36px; font-size: 1.2rem; }
             .app-tooltip { display: none; }
-            
-            /* 3. Hide Clock on Mobile */
-            #desktop .md\:block {
-                display: none !important;
-            }
+            /* Hide top-right text on mobile to save space */
+            #clock-widget { display: none; }
         }
     </style>
 </head>
-<body id="body">
+<body>
 
     <!-- BOOT SCREEN -->
     <div id="boot-screen">
-        <div id="boot-text" class="text-sm md:text-base leading-relaxed"></div>
+        <div id="boot-text" class="leading-relaxed"></div>
     </div>
 
     <!-- CONTEXT MENU -->
     <div id="context-menu">
         <div class="ctx-item" onclick="refreshDesktop()">
-            <i class="fas fa-sync-alt text-blue-400"></i> Refresh
+            <i class="fas fa-sync-alt"></i> REBOOT UI
         </div>
         <div class="ctx-item" onclick="changeWallpaper()">
-            <i class="fas fa-image text-purple-400"></i> Change Wallpaper
+            <i class="fas fa-image"></i> CYCLE GRID
         </div>
         <div class="ctx-divider"></div>
         <div class="ctx-item" onclick="handleTaskbarClick('window-about')">
-            <i class="fas fa-info-circle text-gray-400"></i> System Properties
+            <i class="fas fa-info-circle"></i> SYS_INFO
         </div>
     </div>
 
@@ -354,58 +340,58 @@
 
     <!-- DESKTOP -->
     <div id="desktop">
+        <div id="grid-bg"></div>
         <canvas id="starfield"></canvas>
 
-        <!-- Date/Time Widget (Hidden on mobile via CSS media query) -->
-        <div class="absolute top-8 right-8 text-right text-gray-300 font-light select-none z-0 hidden md:block">
-            <div id="clock-time" class="text-4xl font-bold tracking-tight text-white drop-shadow-md">12:00</div>
-            <div id="clock-date" class="text-sm font-medium uppercase tracking-widest opacity-80 mt-1">Monday, Jan 1</div>
+        <!-- Date/Time Widget -->
+        <div id="clock-widget" class="absolute top-8 right-8 text-right z-0 pointer-events-none">
+            <div id="clock-time" class="text-5xl font-black text-white tracking-tighter" style="text-shadow: 4px 4px 0 var(--neon-pink);">12:00</div>
+            <div id="clock-date" class="text-sm font-bold text-cyan-400 mt-1 uppercase tracking-widest bg-black inline-block px-2">Monday, Jan 1</div>
         </div>
 
         <!-- CENTER BRANDING -->
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-0 select-none">
-            <h1 class="text-7xl md:text-9xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-500 drop-shadow-2xl">
+            <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 drop-shadow-[4px_4px_0_rgba(255,0,255,1)]">
                 JABEZ
             </h1>
-            <div class="mt-6 flex items-center justify-center gap-3">
-                <span class="h-[1px] w-8 bg-gray-500"></span>
-                <p class="text-lg md:text-xl text-blue-200 font-light tracking-widest uppercase">Student • Jefrin Jabez Christian</p>
-                <span class="h-[1px] w-8 bg-gray-500"></span>
+            <div class="mt-4 inline-block bg-black border border-cyan-400 px-4 py-1">
+                <p class="text-lg md:text-xl text-cyan-400 font-bold tracking-widest uppercase">Student // Developer</p>
             </div>
         </div>
 
         <!-- WINDOWS -->
 
         <!-- 1. About Me -->
-        <div id="window-about" class="window w-[600px] h-[450px]" style="top: 15%; left: 20%; z-index: 10;">
+        <div id="window-about" class="window w-[650px] h-[450px]" style="top: 15%; left: 20%; z-index: 10;">
             <div class="window-header" onmousedown="startDrag(event, 'window-about')" ontouchstart="startDrag(event, 'window-about')">
+                <span class="tracking-widest">SYSTEM // ABOUT</span>
                 <div class="window-controls">
-                    <div class="control-dot close-dot" onclick="closeWindow('window-about')"></div>
-                    <div class="control-dot min-dot" onclick="minimizeWindow('window-about')"></div>
-                    <div class="control-dot max-dot" onclick="toggleMaximize('window-about')"></div>
+                    <div class="win-btn btn-min" onclick="minimizeWindow('window-about')"></div>
+                    <div class="win-btn btn-max" onclick="toggleMaximize('window-about')"></div>
+                    <div class="win-btn btn-close" onclick="closeWindow('window-about')"></div>
                 </div>
-                <span class="font-medium text-sm text-gray-300">About Me</span>
-                <div class="w-8"></div> 
             </div>
             <div class="window-content">
-                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
-                    <div class="w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex-shrink-0 flex items-center justify-center text-5xl shadow-2xl border border-white/10">
-                        🎓
+                <div class="content-inner flex flex-col md:flex-row items-start gap-8">
+                    <div class="w-32 h-32 border-2 border-white bg-gradient-to-br from-pink-600 to-purple-700 flex-shrink-0 flex items-center justify-center text-5xl shadow-[4px_4px_0_white]">
+                        💀
                     </div>
-                    <div class="text-center md:text-left">
-                        <h2 class="text-3xl font-bold text-white mb-1">Jefrin Jabez Christian</h2>
-                        <p class="text-blue-400 font-mono text-sm mb-4">@jabez • Student & Developer</p>
-                        <p class="text-gray-300 leading-relaxed mb-6">
-                            Hi, I'm Jabez - a student passionate about physics, problem-solving, and web development. This virtual desktop is my creative playground where I showcase my journey in coding, design, and continuous learning.
+                    <div>
+                        <h2 class="text-3xl font-bold text-white mb-2 uppercase">Jefrin Jabez</h2>
+                        <p class="text-neon-cyan font-bold mb-4">Class: Student | Spec: Physics/Dev</p>
+                        <p class="text-gray-300 leading-relaxed mb-6 text-sm">
+                            &gt; INITIALIZING BIO...<br>
+                            &gt; SUBJECT IS A STUDENT PASSIONATE ABOUT PHYSICS AND CODING.<br>
+                            &gt; CURRENTLY BUILDING DIGITAL EXPERIENCES.<br>
+                            &gt; GOAL: ACADEMIA & RESEARCH.
                         </p>
                         
-                        <div class="bg-white/5 rounded-xl p-4 border border-white/5">
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Core Interests</h3>
-                            <div class="flex flex-wrap gap-2 justify-center md:justify-start">
-                                <span class="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-xs">Web Dev</span>
-                                <span class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs">Physics</span>
-                                <span class="px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/30 rounded-full text-xs">Algorithms</span>
-                                <span class="px-3 py-1 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full text-xs">UI/UX</span>
+                        <div class="border border-gray-700 p-3 bg-black/50">
+                            <h3 class="text-xs font-bold text-pink-500 uppercase tracking-wider mb-2">[ SKILLSET ]</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-2 py-1 bg-pink-600 text-black font-bold text-xs">WEB_DEV</span>
+                                <span class="px-2 py-1 bg-cyan-600 text-black font-bold text-xs">PHYSICS</span>
+                                <span class="px-2 py-1 bg-yellow-500 text-black font-bold text-xs">ALGORITHMS</span>
                             </div>
                         </div>
                     </div>
@@ -416,48 +402,38 @@
         <!-- 2. Projects -->
         <div id="window-projects" class="window w-[750px] h-[550px]" style="top: 10%; left: 15%; z-index: 9;">
             <div class="window-header" onmousedown="startDrag(event, 'window-projects')" ontouchstart="startDrag(event, 'window-projects')">
+                <span>DIR: ~/PROJECTS</span>
                 <div class="window-controls">
-                    <div class="control-dot close-dot" onclick="closeWindow('window-projects')"></div>
-                    <div class="control-dot min-dot" onclick="minimizeWindow('window-projects')"></div>
-                    <div class="control-dot max-dot" onclick="toggleMaximize('window-projects')"></div>
+                    <div class="win-btn btn-min" onclick="minimizeWindow('window-projects')"></div>
+                    <div class="win-btn btn-max" onclick="toggleMaximize('window-projects')"></div>
+                    <div class="win-btn btn-close" onclick="closeWindow('window-projects')"></div>
                 </div>
-                <span class="font-medium text-sm text-gray-300">~/Projects</span>
-                <div class="w-8"></div>
             </div>
-            <div class="window-content bg-gray-900/50">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    <!-- Project Cards -->
-                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
-                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
-                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-blue-500 transition">🚀</div>
-                            <div class="absolute bottom-2 left-2">
-                                <span class="text-[10px] font-mono bg-blue-600 text-white px-2 py-1 rounded">Full Stack</span>
-                            </div>
+            <div class="window-content">
+                <div class="content-inner grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Project Card -->
+                    <div class="group border border-gray-700 hover:border-cyan-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                        <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
+                            <span class="text-4xl">🚀</span>
                         </div>
-                        <h3 class="font-bold text-white text-lg">Project Alpha</h3>
-                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">A comprehensive student management system built to streamline academic processes.</p>
+                        <h3 class="font-bold text-white text-lg uppercase">Project Alpha</h3>
+                        <p class="text-xs text-gray-400 mt-2">Comprehensive student management system. Stack: MERN.</p>
                     </div>
 
-                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
-                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
-                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-purple-500 transition">🧠</div>
-                            <div class="absolute bottom-2 left-2">
-                                <span class="text-[10px] font-mono bg-purple-600 text-white px-2 py-1 rounded">AI/ML</span>
-                            </div>
+                    <div class="group border border-gray-700 hover:border-pink-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                        <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
+                            <span class="text-4xl">🔮</span>
                         </div>
-                        <h3 class="font-bold text-white text-lg">Data Viz Tool</h3>
-                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">Visualizing complex datasets using Python and modern web libraries.</p>
+                        <h3 class="font-bold text-white text-lg uppercase">Data Viz Tool</h3>
+                        <p class="text-xs text-gray-400 mt-2">Visualizing complex datasets with Python/D3.</p>
                     </div>
                     
-                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
-                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
-                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-green-500 transition">🛠</div>
-                            <div class="absolute bottom-2 left-2">
-                                <span class="text-[10px] font-mono bg-green-600 text-white px-2 py-1 rounded">Utility</span>
-                            </div>
+                    <div class="group border border-gray-700 hover:border-yellow-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                        <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
+                            <span class="text-4xl">💻</span>
                         </div>
-                        <h3 class="font-bold text-white text-lg">Portfolio OS</h3>
-                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">This very website! A Windows/macOS hybrid interface built with vanilla JS and Tailwind.</p>
+                        <h3 class="font-bold text-white text-lg uppercase">Portfolio OS</h3>
+                        <p class="text-xs text-gray-400 mt-2">The website you are looking at right now.</p>
                     </div>
                 </div>
             </div>
@@ -465,45 +441,46 @@
 
         <!-- 3. Terminal -->
         <div id="window-terminal" class="window w-[600px] h-[400px]" style="top: 25%; left: 30%; z-index: 11;">
-            <div class="window-header bg-[#1e1e1e] border-b border-gray-700" onmousedown="startDrag(event, 'window-terminal')" ontouchstart="startDrag(event, 'window-terminal')">
+            <div class="window-header" style="background: #222; color: #0f0; border-color: #0f0;" onmousedown="startDrag(event, 'window-terminal')" ontouchstart="startDrag(event, 'window-terminal')">
+                <span>TERM_V1.0</span>
                 <div class="window-controls">
-                    <div class="control-dot close-dot" onclick="closeWindow('window-terminal')"></div>
-                    <div class="control-dot min-dot" onclick="minimizeWindow('window-terminal')"></div>
-                    <div class="control-dot max-dot" onclick="toggleMaximize('window-terminal')"></div>
+                    <div class="win-btn btn-min" onclick="minimizeWindow('window-terminal')"></div>
+                    <div class="win-btn btn-max" onclick="toggleMaximize('window-terminal')"></div>
+                    <div class="win-btn btn-close" onclick="closeWindow('window-terminal')"></div>
                 </div>
-                <span class="font-mono text-xs text-gray-400">jabez@system: ~</span>
-                <div class="w-8"></div>
             </div>
-            <div class="window-content bg-[#0c0c0c] font-mono text-sm p-0">
-                <div class="p-4" id="terminal-output">
-                    <div class="mb-2 text-green-400">Welcome to Jabez Terminal v1.0</div>
-                    <div class="mb-4 text-gray-500">Type 'help' to see available commands.</div>
-                </div>
-                <div class="flex items-center px-4 pb-4">
-                    <span class="text-purple-500 mr-2">➜</span>
-                    <span class="text-blue-400 mr-2">~</span>
-                    <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white w-full font-mono" autocomplete="off" spellcheck="false" autofocus>
+            <div class="window-content" style="background: black; font-family: 'Courier New', monospace;">
+                <div class="content-inner text-green-500 text-sm">
+                    <div class="p-2" id="terminal-output">
+                        <div class="mb-2">JABEZ_OS [Version 2.5]</div>
+                        <div class="mb-4">(c) 2025 Corp. All rights reserved. Type 'help'.</div>
+                    </div>
+                    <div class="flex items-center px-2 pb-4">
+                        <span class="mr-2">root@jabez:~$</span>
+                        <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white w-full font-mono uppercase" autocomplete="off" spellcheck="false" autofocus>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. Problems (Was Blog) -->
+        <!-- 4. Problems -->
         <div id="window-problems" class="window w-[550px] h-[650px]" style="top: 5%; left: 55%; z-index: 8;">
             <div class="window-header" onmousedown="startDrag(event, 'window-problems')" ontouchstart="startDrag(event, 'window-problems')">
+                <span>LATEST_PROBLEMS</span>
                 <div class="window-controls">
-                    <div class="control-dot close-dot" onclick="closeWindow('window-problems')"></div>
-                    <div class="control-dot min-dot" onclick="minimizeWindow('window-problems')"></div>
-                    <div class="control-dot max-dot" onclick="toggleMaximize('window-problems')"></div>
+                    <div class="win-btn btn-min" onclick="minimizeWindow('window-problems')"></div>
+                    <div class="win-btn btn-max" onclick="toggleMaximize('window-problems')"></div>
+                    <div class="win-btn btn-close" onclick="closeWindow('window-problems')"></div>
                 </div>
-                <span class="font-medium text-sm text-gray-300">Problems</span>
-                <div class="w-8"></div>
             </div>
-            <div class="window-content bg-[#1c1c1c] text-gray-200 p-6">
-                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
-                    <h2 class="text-xl font-bold">Latest Problems</h2>
-                </div>
-                <div id="problems-container" class="space-y-4">
-                    <p class="text-center text-gray-500 py-8" id="problems-status">Fetching latest problems...</p>
+            <div class="window-content">
+                <div class="content-inner">
+                    <div class="flex items-center justify-between border-b-2 border-white pb-2 mb-4">
+                        <h2 class="text-xl font-bold text-white">FEED_INCOMING...</h2>
+                    </div>
+                    <div id="problems-container" class="space-y-4">
+                        <p class="text-center text-pink-500 py-8 font-bold animate-pulse" id="problems-status">CONNECTING TO QUARTZ NODE...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -511,71 +488,68 @@
         <!-- 5. Contact -->
         <div id="window-contact" class="window w-[400px] h-[350px]" style="top: 30%; left: 40%; z-index: 12;">
             <div class="window-header" onmousedown="startDrag(event, 'window-contact')" ontouchstart="startDrag(event, 'window-contact')">
+                <span>COMMS_LINK</span>
                 <div class="window-controls">
-                    <div class="control-dot close-dot" onclick="closeWindow('window-contact')"></div>
-                    <div class="control-dot min-dot" onclick="minimizeWindow('window-contact')"></div>
-                    <div class="control-dot max-dot" onclick="toggleMaximize('window-contact')"></div>
+                    <div class="win-btn btn-min" onclick="minimizeWindow('window-contact')"></div>
+                    <div class="win-btn btn-max" onclick="toggleMaximize('window-contact')"></div>
+                    <div class="win-btn btn-close" onclick="closeWindow('window-contact')"></div>
                 </div>
-                <span class="font-medium text-sm text-gray-300">Contact</span>
-                <div class="w-8"></div>
             </div>
-            <div class="window-content flex flex-col justify-center items-center text-center p-8">
-                <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-orange-400 rounded-full flex items-center justify-center text-3xl mb-6 shadow-lg">
-                    👋
-                </div>
-                <h2 class="text-2xl font-bold mb-2">Say Hello!</h2>
-                <p class="text-sm text-gray-400 mb-8 leading-relaxed">I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.</p>
-                
-                <a href="mailto:jabez@example.com" class="group relative inline-flex items-center justify-center px-8 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-600 font-pj rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 hover:bg-blue-500 w-full">
-                    Email Me
-                </a>
-                
-                <div class="flex gap-6 mt-8">
-                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-github text-2xl"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-linkedin text-2xl"></i></a>
-                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-twitter text-2xl"></i></a>
+            <div class="window-content">
+                <div class="content-inner flex flex-col justify-center items-center text-center p-4">
+                    <div class="w-20 h-20 border-2 border-white rounded-full flex items-center justify-center text-3xl mb-6 bg-black">
+                        📡
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2 text-white">OPEN CHANNEL</h2>
+                    <p class="text-sm text-gray-400 mb-8">TRANSMIT MESSAGE TO OPERATOR?</p>
+                    
+                    <a href="mailto:jabez@example.com" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase border-2 border-blue-400 hover:border-white transition">
+                        [ SEND EMAIL ]
+                    </a>
+                    
+                    <div class="flex gap-6 mt-8">
+                        <a href="#" class="text-gray-500 hover:text-white text-2xl transition"><i class="fab fa-github"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-white text-2xl transition"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" class="text-gray-500 hover:text-white text-2xl transition"><i class="fab fa-twitter"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- TASKBAR -->
-        <div id="taskbar">
-            <div class="app-icon" id="icon-about" onclick="handleTaskbarClick('window-about')" style="color: #3b82f6;">
-                <i class="fas fa-user-astronaut"></i>
-                <div class="app-indicator"></div>
-                <span class="app-tooltip">About</span>
-            </div>
-            <div class="app-icon" id="icon-projects" onclick="handleTaskbarClick('window-projects')" style="color: #f59e0b;">
-                <i class="fas fa-layer-group"></i>
-                <div class="app-indicator"></div>
-                <span class="app-tooltip">Projects</span>
-            </div>
-            <div class="app-icon" id="icon-terminal" onclick="handleTaskbarClick('window-terminal')" style="color: #10b981;">
-                <i class="fas fa-terminal"></i>
-                <div class="app-indicator"></div>
-                <span class="app-tooltip">Terminal</span>
-            </div>
-            <div class="app-icon" id="icon-problems" onclick="handleTaskbarClick('window-problems')" style="color: #ec4899;">
-                <i class="fas fa-puzzle-piece"></i>
-                <div class="app-indicator"></div>
-                <span class="app-tooltip">Problems</span>
-            </div>
-            <div class="app-icon" id="icon-contact" onclick="handleTaskbarClick('window-contact')" style="color: #8b5cf6;">
-                <i class="fas fa-paper-plane"></i>
-                <div class="app-indicator"></div>
-                <span class="app-tooltip">Contact</span>
+        <div id="taskbar-container">
+            <div id="taskbar">
+                <div class="app-icon" id="icon-about" onclick="handleTaskbarClick('window-about')">
+                    <i class="fas fa-user-astronaut"></i>
+                    <span class="app-tooltip">ABOUT</span>
+                </div>
+                <div class="app-icon" id="icon-projects" onclick="handleTaskbarClick('window-projects')">
+                    <i class="fas fa-layer-group"></i>
+                    <span class="app-tooltip">PROJECTS</span>
+                </div>
+                <div class="app-icon" id="icon-terminal" onclick="handleTaskbarClick('window-terminal')">
+                    <i class="fas fa-terminal"></i>
+                    <span class="app-tooltip">TERM</span>
+                </div>
+                <div class="app-icon" id="icon-problems" onclick="handleTaskbarClick('window-problems')">
+                    <i class="fas fa-puzzle-piece"></i>
+                    <span class="app-tooltip">PROBLEMS</span>
+                </div>
+                <div class="app-icon" id="icon-contact" onclick="handleTaskbarClick('window-contact')">
+                    <i class="fas fa-satellite-dish"></i>
+                    <span class="app-tooltip">COMMS</span>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Confirmation Modal Structure (replaces alert/confirm) -->
-    <div id="custom-modal" class="fixed inset-0 bg-black/70 items-center justify-center z-[1000] hidden">
-        <div id="modal-content" class="bg-gray-800 p-6 rounded-lg shadow-2xl text-center border border-white/10 w-96">
-            <!-- Content injected by showModal() -->
+    <!-- NOTIFICATION -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/80 items-center justify-center z-[1000] hidden">
+        <div id="modal-content" class="bg-black border-4 border-yellow-500 p-6 w-80 text-center shadow-[8px_8px_0_#aa0]">
+            <!-- Content injected -->
         </div>
     </div>
-
 
     <script>
         // --- RSS FEED LOGIC ---
@@ -587,53 +561,42 @@
             const container = document.getElementById('problems-container');
             
             if (container.children.length === 0 || container.querySelector('#problems-status')) {
-                statusEl.textContent = `Fetching latest problems...`;
+                statusEl.textContent = `SCANNING... [ATTEMPT ${retryCount+1}]`;
             }
 
             try {
                 const response = await fetch(RSS_FEED_URL);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                 const xmlText = await response.text();
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                 
                 if (xmlDoc.getElementsByTagName("parsererror").length) {
-                    console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
-                    throw new Error("Failed to parse data.");
+                    throw new Error("Data Corruption Detected");
                 }
 
                 const items = xmlDoc.querySelectorAll('item');
                 const articles = Array.from(items).map(item => ({
-                    title: item.querySelector('title')?.textContent.trim() || 'Untitled',
+                    title: item.querySelector('title')?.textContent.trim() || 'UNTITLED_DATA',
                     link: item.querySelector('link')?.textContent.trim() || '#',
-                    description: item.querySelector('description')?.textContent.trim() || 'No summary available.',
+                    description: item.querySelector('description')?.textContent.trim() || 'No data.',
                     pubDate: item.querySelector('pubDate')?.textContent.trim() || null,
                 }));
                 
                 renderArticles(articles);
-                if (articles.length > 0) {
-                     const existingStatus = document.getElementById('problems-status');
-                     if(existingStatus) existingStatus.remove();
-                } else {
-                    statusEl.textContent = "No problems found.";
+                if (articles.length > 0 && document.getElementById('problems-status')) {
+                     document.getElementById('problems-status').remove();
+                } else if (articles.length === 0) {
+                    statusEl.textContent = "NO DATA FOUND.";
                 }
 
             } catch (error) {
-                console.error("Error fetching/parsing feed:", error);
-                
+                console.error("Feed Error:", error);
                 if (retryCount < MAX_RETRIES - 1) {
-                    const delay = Math.pow(2, retryCount) * 1000;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchAndParseRss(retryCount + 1);
+                    setTimeout(() => fetchAndParseRss(retryCount + 1), 1000 * Math.pow(2, retryCount));
                 } else {
-                    statusEl.innerHTML = `
-                        <div class="text-red-400">Failed to load content.</div>
-                        <div class="text-xs text-gray-500 mt-1">Please try again later.</div>
-                    `;
+                    statusEl.innerHTML = `<span class="text-red-500">CONNECTION FAILED.<br>MANUAL RETRY REQUIRED.</span>`;
                 }
             }
         }
@@ -646,113 +609,128 @@
                 const articleElement = document.createElement('a');
                 articleElement.href = article.link;
                 articleElement.target = '_blank';
-                articleElement.className = 'group block bg-white/5 hover:bg-white/10 p-4 rounded-lg transition border border-transparent hover:border-white/10 cursor-pointer';
+                articleElement.className = 'group block border border-gray-600 bg-black/50 p-3 hover:border-pink-500 hover:bg-pink-900/20 transition cursor-pointer';
                 
                 let dateDisplay = '';
                 if (article.pubDate) {
-                    try {
-                        const date = new Date(article.pubDate);
-                        if (!isNaN(date)) {
-                            dateDisplay = date.toLocaleDateString();
-                        }
-                    } catch (e) {
-                        dateDisplay = article.pubDate;
-                    }
+                    const date = new Date(article.pubDate);
+                    dateDisplay = !isNaN(date) ? date.toLocaleDateString() : article.pubDate;
                 }
 
                 articleElement.innerHTML = `
-                    <div class="flex items-center gap-2 mb-2 text-xs text-pink-400">
-                        <span>${dateDisplay}</span>
+                    <div class="flex items-center gap-2 mb-1 text-xs text-pink-500 font-bold">
+                        <span>[ ${dateDisplay} ]</span>
                     </div>
-                    <h3 class="font-bold text-lg text-white mb-2 group-hover:text-pink-300 transition">${article.title}</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">${article.description}</p>
+                    <h3 class="font-bold text-white text-md uppercase mb-1 group-hover:text-cyan-400">${article.title}</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2 font-mono">${article.description}</p>
                 `;
                 container.appendChild(articleElement);
             });
         }
 
-
-        // --- UTILITY: CUSTOM MODAL ---
-
-        const modal = document.getElementById('custom-modal');
-        const modalContent = document.getElementById('modal-content');
-
-        function showModal(title, message, type = 'info') {
-            const icon = type === 'success' ? '<i class="fas fa-check-circle text-green-500 text-3xl mb-3"></i>' :
-                         type === 'error' ? '<i class="fas fa-times-circle text-red-500 text-3xl mb-3"></i>' :
-                         '<i class="fas fa-info-circle text-blue-500 text-3xl mb-3"></i>';
-            const buttonColor = type === 'success' ? 'bg-green-600 hover:bg-green-500' : 
-                                type === 'error' ? 'bg-red-600 hover:bg-red-500' : 
-                                'bg-blue-600 hover:bg-blue-500';
+        // --- UTILITY MODAL ---
+        function showModal(title, message, type='info') {
+            const modal = document.getElementById('custom-modal');
+            const content = document.getElementById('modal-content');
+            const colorClass = type === 'error' ? 'text-red-500' : 'text-yellow-500';
             
-            modalContent.innerHTML = `
-                ${icon}
-                <p class="text-lg font-semibold text-white">${title}</p>
-                <p class="text-sm text-gray-400 mt-1">${message}</p>
-                <button onclick="window.hideModal()" class="mt-4 ${buttonColor} text-white px-4 py-1 rounded transition">Close</button>
+            content.innerHTML = `
+                <h2 class="text-xl font-black uppercase mb-2 ${colorClass}">${title}</h2>
+                <p class="text-sm text-white mb-6 font-mono">${message}</p>
+                <button onclick="document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').classList.remove('flex');" class="bg-white text-black font-bold px-6 py-2 hover:bg-gray-300 uppercase">
+                    Acknowledge
+                </button>
             `;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
         }
 
-        window.hideModal = function() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        // --- NOTIFICATIONS SYSTEM ---
         function showNotification(message) {
             const container = document.getElementById('notification-area');
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<i class="fas fa-bell text-yellow-400"></i> <span>${message}</span>`;
-            
+            toast.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${message}</span>`;
             container.appendChild(toast);
-            
-            // Trigger animation
-            requestAnimationFrame(() => {
-                toast.classList.add('show');
-            });
-
-            // Remove after delay
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            requestAnimationFrame(() => toast.classList.add('show'));
+            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
-
-        // --- CORE OS FUNCTIONS ---
-
+        // --- WINDOW MANAGER & DRAG FIX ---
         let zIndexCounter = 20;
-
-        // Map window IDs to icon IDs
         const windowIconMap = {
-            'window-about': 'icon-about',
-            'window-projects': 'icon-projects',
-            'window-terminal': 'icon-terminal',
-            'window-problems': 'icon-problems',
-            'window-contact': 'icon-contact'
+            'window-about': 'icon-about', 'window-projects': 'icon-projects',
+            'window-terminal': 'icon-terminal', 'window-problems': 'icon-problems', 'window-contact': 'icon-contact'
         };
 
-        // Smart Taskbar Handler
+        // Improved Drag Logic
+        let isDragging = false;
+        let dragWindow = null;
+        let dragOffsetX = 0;
+        let dragOffsetY = 0;
+
+        window.startDrag = function(e, id) {
+            const win = document.getElementById(id);
+            if(win.classList.contains('maximized')) return;
+            
+            e.preventDefault(); // Stop text selection/scrolling
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            const rect = win.getBoundingClientRect();
+            dragOffsetX = clientX - rect.left;
+            dragOffsetY = clientY - rect.top;
+            
+            dragWindow = win;
+            isDragging = true;
+            
+            // Bring to front
+            zIndexCounter++;
+            win.style.zIndex = zIndexCounter;
+            
+            // Disable transition for instant follow
+            win.style.transition = 'none';
+        }
+
+        function onDragMove(e) {
+            if(!isDragging || !dragWindow) return;
+            e.preventDefault();
+            
+            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+            
+            dragWindow.style.left = (clientX - dragOffsetX) + 'px';
+            dragWindow.style.top = (clientY - dragOffsetY) + 'px';
+            // Clear transform from open animation
+            dragWindow.style.transform = 'none';
+        }
+
+        function onDragEnd() {
+            if(dragWindow) {
+                // Re-enable transitions for maximize/minimize
+                dragWindow.style.transition = 'transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s, opacity 0.2s';
+            }
+            isDragging = false;
+            dragWindow = null;
+        }
+
+        document.addEventListener('mousemove', onDragMove);
+        document.addEventListener('touchmove', onDragMove, {passive: false});
+        document.addEventListener('mouseup', onDragEnd);
+        document.addEventListener('touchend', onDragEnd);
+
+        // Window Controls
         window.handleTaskbarClick = function(id) {
             const win = document.getElementById(id);
             const isClosed = win.style.display === 'none' || win.style.display === '';
             
             if (isClosed) {
-                // Open it
                 openWindow(id);
             } else {
-                // It's open. Is it focused?
-                const isFocused = parseInt(win.style.zIndex) === zIndexCounter;
-                
-                if (isFocused) {
-                    // Minimize
+                if (parseInt(win.style.zIndex) === zIndexCounter) {
                     minimizeWindow(id);
                 } else {
-                    // Bring to front
-                    win.style.display = 'flex'; // Ensure visible if hidden
+                    win.style.display = 'flex';
                     zIndexCounter++;
                     win.style.zIndex = zIndexCounter;
                 }
@@ -765,13 +743,9 @@
             zIndexCounter++;
             win.style.zIndex = zIndexCounter;
             
-            // Activate Icon Indicator
             const iconId = windowIconMap[id];
-            if (iconId) {
-                document.getElementById(iconId).classList.add('active');
-            }
+            if(iconId) document.getElementById(iconId).classList.add('active');
             
-            // Special logic for problems
             if (id === 'window-problems' && document.getElementById('problems-container').children.length <= 1) {
                  fetchAndParseRss();
             }
@@ -779,323 +753,123 @@
 
         window.closeWindow = function(id) {
             document.getElementById(id).style.display = 'none';
-            // Deactivate Icon Indicator
             const iconId = windowIconMap[id];
-            if (iconId) {
-                document.getElementById(iconId).classList.remove('active');
-            }
+            if(iconId) document.getElementById(iconId).classList.remove('active');
         }
 
         window.minimizeWindow = function(id) {
-            const win = document.getElementById(id);
-            win.style.display = 'none';
-            // Note: We keep the icon active to show it's still "running" in background
+            document.getElementById(id).style.display = 'none';
         }
 
         window.toggleMaximize = function(id) {
-            const win = document.getElementById(id);
-            win.classList.toggle('maximized');
-        }
-        
-        // Terminal helper for recycle bin (still available via context menu option)
-        window.openTerminalCommand = function(cmd) {
-            openWindow('window-terminal');
-            const input = document.getElementById('terminal-input');
-            input.value = cmd;
-            // Simulate Enter key
-            const event = new KeyboardEvent('keydown', {
-                key: 'Enter',
-                code: 'Enter',
-                which: 13,
-                keyCode: 13,
-            });
-            input.dispatchEvent(event);
+            document.getElementById(id).classList.toggle('maximized');
         }
 
-        // --- CONTEXT MENU ---
-        const desktop = document.getElementById('desktop');
-        const contextMenu = document.getElementById('context-menu');
-
-        desktop.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            // Basic boundary check
-            let x = e.clientX;
-            let y = e.clientY;
-            
-            contextMenu.style.display = 'block';
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-        });
-
-        document.addEventListener('click', () => {
-            contextMenu.style.display = 'none';
-        });
-
-        window.refreshDesktop = function() {
-            document.body.style.opacity = '0.5';
-            setTimeout(() => {
-                document.body.style.opacity = '1';
-                showNotification("Desktop Refreshed");
-            }, 300);
-        }
-
-        const wallpapers = [
-            'radial-gradient(circle at center, #1e293b 0%, #020617 100%)',
-            'linear-gradient(to right, #24243e, #302b63, #0f0c29)',
-            'linear-gradient(to bottom, #000000, #434343)',
-            'radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)'
-        ];
-        let currentWallpaper = 0;
-
-        window.changeWallpaper = function() {
-            currentWallpaper = (currentWallpaper + 1) % wallpapers.length;
-            desktop.style.background = wallpapers[currentWallpaper];
-            showNotification("Wallpaper Changed");
-        }
-
-
-        // --- DRAG & DROP LOGIC ---
-        
-        document.querySelectorAll('.window').forEach(win => {
-            // Bring window to front on any click/touch
-            win.addEventListener('mousedown', () => {
-                zIndexCounter++;
-                win.style.zIndex = zIndexCounter;
-            });
-             win.addEventListener('touchstart', () => {
-                zIndexCounter++;
-                win.style.zIndex = zIndexCounter;
-            });
-        });
-
-        let isDragging = false;
-        let currentWindow = null;
-        let xOffset = 0;
-        let yOffset = 0;
-
-        window.startDrag = function(e, windowId) {
-            const win = document.getElementById(windowId);
-            // Don't drag if maximized
-            if (win.classList.contains('maximized')) return;
-
-            // FIX: Prevent default browser drag/selection behavior
-            e.preventDefault(); 
-            
-            const rect = win.getBoundingClientRect();
-            
-            if (e.type === "touchstart") {
-                xOffset = e.touches[0].clientX - rect.left;
-                yOffset = e.touches[0].clientY - rect.top;
-            } else {
-                xOffset = e.clientX - rect.left;
-                yOffset = e.clientY - rect.top;
-            }
-            
-            currentWindow = win;
-            isDragging = true;
-            zIndexCounter++;
-            currentWindow.style.zIndex = zIndexCounter;
-        }
-
-        function drag(e) {
-            if (isDragging && currentWindow) {
-                // e.preventDefault() is already called in startDrag, but repeating here for safety on touchmove
-                if (e.type === "touchmove") e.preventDefault(); 
-                
-                let clientX, clientY;
-                
-                if(e.type === "touchmove") {
-                    clientX = e.touches[0].clientX;
-                    clientY = e.touches[0].clientY;
-                } else {
-                    clientX = e.clientX;
-                    clientY = e.clientY;
-                }
-
-                currentWindow.style.left = (clientX - xOffset) + "px";
-                currentWindow.style.top = (clientY - yOffset) + "px";
-                currentWindow.style.transform = "none"; 
-            }
-        }
-
-        function stopDrag() {
-            isDragging = false;
-            currentWindow = null;
-        }
-
-        document.addEventListener("mousemove", drag, false);
-        document.addEventListener("mouseup", stopDrag, false);
-        document.addEventListener("touchmove", drag, {passive: false});
-        document.addEventListener("touchend", stopDrag, false);
-
-
-        // TERMINAL LOGIC
-        const terminalInput = document.getElementById('terminal-input');
-        const terminalOutput = document.getElementById('terminal-output');
-
-        terminalInput.addEventListener('keydown', function(e) {
+        // Terminal
+        document.getElementById('terminal-input').addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                const command = this.value.trim().toLowerCase();
-                const cmdLine = document.createElement('div');
-                cmdLine.innerHTML = `<span class="text-purple-500">➜</span> <span class="text-blue-400">~</span> <span class="text-white">${this.value}</span>`;
-                terminalOutput.appendChild(cmdLine);
-
-                const response = document.createElement('div');
-                response.className = 'mb-2 text-gray-300 whitespace-pre-wrap';
+                const val = e.target.value.trim().toLowerCase();
+                const out = document.getElementById('terminal-output');
+                const line = document.createElement('div');
+                line.innerHTML = `<span class="text-purple-500">root@jabez:~$</span> ${val}`;
+                out.appendChild(line);
                 
-                switch(command) {
-                    case 'help':
-                        response.innerHTML = 'Available commands:\n- about: Who am I?\n- projects: List my work\n- problems: View problem set\n- contact: Get email\n- clear: Clear screen\n- date: Current time';
-                        break;
-                    case 'about':
-                        response.innerHTML = 'User: Jefrin Jabez Christian\nStatus: Student\nSystem: Jabez OS v1.0';
-                        break;
-                    case 'projects':
-                        response.innerHTML = '1. Project Alpha (Student Mgmt)\n2. Data Viz Tool (Python)\n3. Portfolio OS (Web)';
-                        break;
-                    case 'contact':
-                        response.innerHTML = 'Email: jabez@example.com';
-                        break;
-                    case 'problems':
-                        window.openWindow('window-problems');
-                        response.remove(); 
-                        break;
-                    case 'date':
-                        response.innerHTML = new Date().toString();
-                        break;
-                    case 'clear':
-                        terminalOutput.innerHTML = '';
-                        response.remove();
-                        break;
-                    case '':
-                        break;
-                    default:
-                        response.innerHTML = `Command not found: ${command}. Try 'help'.`;
-                        response.className = 'mb-2 text-red-400';
+                let response = '';
+                if(val === 'help') response = 'CMDS: ABOUT, PROJECTS, PROBLEMS, CONTACT, CLEAR';
+                else if(val === 'about') response = 'EXEC: OPENING ABOUT...'; 
+                else if(val === 'clear') { out.innerHTML = ''; response = null; }
+                else if(val === 'problems') { window.openWindow('window-problems'); response = 'LAUNCHING...'; }
+                else response = 'ERR: COMMAND UNKNOWN';
+                
+                if(response) {
+                    const resDiv = document.createElement('div');
+                    resDiv.className = 'text-gray-400 mb-2';
+                    resDiv.textContent = response;
+                    out.appendChild(resDiv);
                 }
-
-                if(command !== 'clear' && command !== 'problems') terminalOutput.appendChild(response);
                 
-                const contentDiv = document.querySelector('#window-terminal .window-content');
-                contentDiv.scrollTop = contentDiv.scrollHeight;
-                this.value = '';
+                if(val === 'about') setTimeout(() => window.openWindow('window-about'), 500);
+                
+                e.target.value = '';
+                // Auto scroll
+                const content = document.querySelector('#window-terminal .window-content');
+                content.scrollTop = content.scrollHeight;
             }
         });
-        
-        document.querySelector('#window-terminal .window-content').addEventListener('click', () => terminalInput.focus());
 
+        // Context Menu
+        const ctxMenu = document.getElementById('context-menu');
+        document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            ctxMenu.style.display = 'block';
+            ctxMenu.style.left = e.clientX + 'px';
+            ctxMenu.style.top = e.clientY + 'px';
+        });
+        document.addEventListener('click', () => ctxMenu.style.display = 'none');
 
-        // --- INITIALIZATION ---
+        window.refreshDesktop = () => {
+            document.body.style.opacity = '0';
+            setTimeout(() => { document.body.style.opacity = '1'; showNotification("SYS_REFRESH COMPLETE"); }, 500);
+        }
         
+        window.changeWallpaper = () => { showNotification("GRID_CYCLE: LOCKED"); }
+
+        // Boot
         window.onload = function() {
-            // Start boot sequence animation and clock
-            startBootSequence();
-            setInterval(updateClock, 1000);
-            updateClock();
-            initCanvas();
-            animateStars();
+            const bootText = [ "BOOT_SEQ_INIT...", "LOADING_KERNEL...", "MOUNTING_FS...", "GRID_ESTABLISHED.", "WELCOME_USER" ];
+            const screen = document.getElementById('boot-screen');
+            const textDiv = document.getElementById('boot-text');
             
-            // Pre-load data
-            fetchAndParseRss();
-        };
-
-        // --- BOOT SEQUENCE LOGIC ---
-        const bootText = [
-            "Initializing JABEZ_OS kernel...",
-            "Loading modules: desktop, terminal, problems...",
-            "Checking data integrity...",
-            "Establishing secure connection...",
-            "Access granted: Jefrin Jabez Christian",
-            "Starting desktop environment..."
-        ];
-
-        const bootScreen = document.getElementById('boot-screen');
-        const bootTextContainer = document.getElementById('boot-text');
-        const desktopBg = document.getElementById('desktop');
-        
-        function startBootSequence() {
             let delay = 0;
-            bootText.forEach((line, index) => {
+            bootText.forEach(txt => {
                 setTimeout(() => {
                     const p = document.createElement('div');
-                    p.textContent = `> ${line}`;
-                    p.className = 'mb-1 text-green-500 font-mono';
-                    bootTextContainer.appendChild(p);
-                    bootScreen.scrollTop = bootScreen.scrollHeight;
+                    p.innerText = `> ${txt}`;
+                    textDiv.appendChild(p);
                 }, delay);
-                delay += Math.random() * 300 + 150; 
+                delay += 300;
             });
-
+            
             setTimeout(() => {
-                bootScreen.style.opacity = '0';
-                setTimeout(() => {
-                    bootScreen.style.display = 'none';
-                    desktopBg.style.opacity = '1';
-                    showNotification("System Ready");
-                }, 500);
+                screen.style.display = 'none';
+                document.getElementById('desktop').style.opacity = '1';
+                showNotification("ONLINE");
+                fetchAndParseRss();
             }, delay + 500);
-        }
-
-        // CLOCK LOGIC
-        function updateClock() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateString = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
-            document.getElementById('clock-time').textContent = timeString;
-            document.getElementById('clock-date').textContent = dateString;
-        }
-
-        // STARFIELD LOGIC
-        const canvas = document.getElementById('starfield');
-        const ctx = canvas.getContext('2d');
-        let width, height, stars = [];
-
-        function initCanvas() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-            createStars();
-        }
-
-        function createStars() {
-            stars = [];
-            const starCount = 200;
-            for(let i = 0; i < starCount; i++) {
-                stars.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    radius: Math.random() * 1.5,
-                    vx: Math.random() * 0.4 - 0.2,
-                    vy: Math.random() * 0.4 - 0.2,
-                    alpha: Math.random()
+            
+            // Stars
+            const cvs = document.getElementById('starfield');
+            const ctx = cvs.getContext('2d');
+            let w, h, stars = [];
+            const init = () => {
+                w = window.innerWidth; h = window.innerHeight;
+                cvs.width = w; cvs.height = h;
+                stars = Array(150).fill().map(() => ({
+                    x: Math.random() * w, y: Math.random() * h,
+                    s: Math.random() * 2, a: Math.random()
+                }));
+            };
+            const anim = () => {
+                ctx.clearRect(0,0,w,h);
+                ctx.fillStyle = "white";
+                stars.forEach(s => {
+                    ctx.globalAlpha = s.a;
+                    ctx.fillRect(s.x, s.y, s.s, s.s); // Square stars for retro look
+                    s.a += (Math.random() - 0.5) * 0.1;
+                    if(s.a < 0) s.a = 0; if(s.a > 1) s.a = 1;
                 });
-            }
-        }
-
-        function animateStars() {
-            ctx.clearRect(0, 0, width, height);
-            stars.forEach(star => {
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
-                ctx.fill();
-                star.x += star.vx;
-                star.y += star.vy;
-                
-                star.alpha += (Math.random() - 0.5) * 0.02;
-                if(star.alpha < 0.1) star.alpha = 0.1;
-                if(star.alpha > 0.8) star.alpha = 0.8;
-
-                if(star.x < 0) star.x = width;
-                if(star.x > width) star.x = 0;
-                if(star.y < 0) star.y = height;
-                if(star.y > height) star.y = 0;
-            });
-            requestAnimationFrame(animateStars);
-        }
-        window.addEventListener('resize', initCanvas);
-
+                requestAnimationFrame(anim);
+            };
+            window.onresize = init;
+            init(); anim();
+            
+            // Clock
+            setInterval(() => {
+                const now = new Date();
+                document.getElementById('clock-time').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+                document.getElementById('clock-date').innerText = now.toLocaleDateString([], {weekday:'long', month:'short', day:'numeric'});
+            }, 1000);
+        };
     </script>
 </body>
 </html>
