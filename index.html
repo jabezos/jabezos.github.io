@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jabez OS | Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Custom Styles & Animations */
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: white;
+            user-select: none;
+            /* Prevent rubber-banding on iOS */
+            overscroll-behavior: none;
+        }
+
+        /* Boot Screen */
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 9999;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            color: #00ff00;
+        }
+
+        /* Desktop Environment */
+        #desktop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+        }
+
+        /* Starfield Canvas */
+        #starfield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* Windows */
+        .window {
+            position: absolute;
+            background: rgba(15, 23, 42, 0.9); /* Slightly more opaque for better readability */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: var(--glass-shadow);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            transition: transform 0.1s, opacity 0.2s;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .window-header {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: grab;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            touch-action: none; /* Crucial for touch dragging */
+        }
+
+        .window-header:active {
+            cursor: grabbing;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .control-dot { width: 12px; height: 12px; border-radius: 50%; transition: transform 0.1s;}
+        .control-dot:hover { transform: scale(1.1); }
+        .close-dot { background: #ff5f56; cursor: pointer; }
+        .min-dot { background: #ffbd2e; cursor: pointer; }
+        .max-dot { background: #27c93f; }
+
+        .window-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            /* Enable smooth scrolling inside windows */
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        /* Scrollbar */
+        .window-content::-webkit-scrollbar { width: 6px; }
+        .window-content::-webkit-scrollbar-track { background: transparent; }
+        .window-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+        .window-content::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* Taskbar */
+        #taskbar {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 12px 24px;
+            display: flex;
+            gap: 1.5rem;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            transition: bottom 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .app-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: white;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            cursor: pointer;
+            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            /* Prevent tap highlight color on mobile */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .app-icon:hover {
+            transform: scale(1.15) translateY(-15px);
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+
+        .app-tooltip {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            opacity: 0;
+            transition: opacity 0.2s, top 0.2s;
+            pointer-events: none;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .app-icon:hover .app-tooltip {
+            opacity: 1;
+            top: -55px;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            /* Windows become almost full screen on mobile */
+            .window { width: 92vw !important; height: 75vh !important; left: 4vw !important; top: 8vh !important; }
+            #taskbar { bottom: 12px; padding: 10px 16px; gap: 0.8rem; width: auto; max-width: 95%; }
+            .app-icon { width: 42px; height: 42px; font-size: 1.25rem; }
+            .window-content { padding: 1rem; }
+            .app-tooltip { display: none; } /* Hide tooltips on touch */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- BOOT SCREEN -->
+    <div id="boot-screen">
+        <div id="boot-text" class="text-sm md:text-base leading-relaxed"></div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div id="desktop">
+        <canvas id="starfield"></canvas>
+
+        <!-- Date/Time Widget -->
+        <div class="absolute top-8 right-8 text-right text-gray-300 font-light select-none z-0 hidden md:block">
+            <div id="clock-time" class="text-4xl font-bold tracking-tight text-white drop-shadow-md">12:00</div>
+            <div id="clock-date" class="text-sm font-medium uppercase tracking-widest opacity-80 mt-1">Monday, Jan 1</div>
+        </div>
+
+        <!-- CENTER BRANDING -->
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-0 select-none">
+            <h1 class="text-7xl md:text-9xl font-extrabold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-gray-200 to-gray-500 drop-shadow-2xl">
+                JABEZ
+            </h1>
+            <div class="mt-6 flex items-center justify-center gap-3">
+                <span class="h-[1px] w-8 bg-gray-500"></span>
+                <p class="text-lg md:text-xl text-blue-200 font-light tracking-widest uppercase">Student • Jefrin Jabez Christian</p>
+                <span class="h-[1px] w-8 bg-gray-500"></span>
+            </div>
+        </div>
+
+        <!-- WINDOWS -->
+
+        <!-- 1. About Me -->
+        <div id="window-about" class="window w-[600px] h-[450px]" style="top: 15%; left: 20%; z-index: 10;">
+            <div class="window-header" onmousedown="startDrag(event, 'window-about')" ontouchstart="startDrag(event, 'window-about')">
+                <div class="window-controls">
+                    <div class="control-dot close-dot" onclick="closeWindow('window-about')"></div>
+                    <div class="control-dot min-dot"></div>
+                    <div class="control-dot max-dot"></div>
+                </div>
+                <span class="font-medium text-sm text-gray-300">About Me</span>
+                <div class="w-8"></div> 
+            </div>
+            <div class="window-content">
+                <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+                    <div class="w-32 h-32 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex-shrink-0 flex items-center justify-center text-5xl shadow-2xl border border-white/10">
+                        🎓
+                    </div>
+                    <div class="text-center md:text-left">
+                        <h2 class="text-3xl font-bold text-white mb-1">Jefrin Jabez Christian</h2>
+                        <p class="text-blue-400 font-mono text-sm mb-4">@jabez • Student & Developer</p>
+                        <p class="text-gray-300 leading-relaxed mb-6">
+                            Hi, I'm Jabez - a student passionate about physics, problem-solving, and web development. This virtual desktop is my creative playground where I showcase my journey in coding, design, and continuous learning.
+                        </p>
+                        
+                        <div class="bg-white/5 rounded-xl p-4 border border-white/5">
+                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Core Interests</h3>
+                            <div class="flex flex-wrap gap-2 justify-center md:justify-start">
+                                <span class="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-xs">Web Dev</span>
+                                <span class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full text-xs">Physics</span>
+                                <span class="px-3 py-1 bg-green-500/20 text-green-300 border border-green-500/30 rounded-full text-xs">Algorithms</span>
+                                <span class="px-3 py-1 bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-full text-xs">UI/UX</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Projects -->
+        <div id="window-projects" class="window w-[750px] h-[550px]" style="top: 10%; left: 15%; z-index: 9;">
+            <div class="window-header" onmousedown="startDrag(event, 'window-projects')" ontouchstart="startDrag(event, 'window-projects')">
+                <div class="window-controls">
+                    <div class="control-dot close-dot" onclick="closeWindow('window-projects')"></div>
+                    <div class="control-dot min-dot"></div>
+                    <div class="control-dot max-dot"></div>
+                </div>
+                <span class="font-medium text-sm text-gray-300">~/Projects</span>
+                <div class="w-8"></div>
+            </div>
+            <div class="window-content bg-gray-900/50">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <!-- Project Cards -->
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
+                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
+                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-blue-500 transition">🚀</div>
+                            <div class="absolute bottom-2 left-2">
+                                <span class="text-[10px] font-mono bg-blue-600 text-white px-2 py-1 rounded">Full Stack</span>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-white text-lg">Project Alpha</h3>
+                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">A comprehensive student management system built to streamline academic processes.</p>
+                    </div>
+
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
+                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
+                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-purple-500 transition">🧠</div>
+                            <div class="absolute bottom-2 left-2">
+                                <span class="text-[10px] font-mono bg-purple-600 text-white px-2 py-1 rounded">AI/ML</span>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-white text-lg">Data Viz Tool</h3>
+                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">Visualizing complex datasets using Python and modern web libraries.</p>
+                    </div>
+                    
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 p-4 rounded-xl cursor-pointer transition-all duration-300">
+                        <div class="h-36 bg-gray-800 rounded-lg mb-4 overflow-hidden relative group-hover:shadow-lg transition">
+                            <div class="absolute inset-0 flex items-center justify-center text-4xl text-gray-600 group-hover:text-green-500 transition">🛠</div>
+                            <div class="absolute bottom-2 left-2">
+                                <span class="text-[10px] font-mono bg-green-600 text-white px-2 py-1 rounded">Utility</span>
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-white text-lg">Portfolio OS</h3>
+                        <p class="text-sm text-gray-400 mt-2 line-clamp-2">This very website! A Windows/macOS hybrid interface built with vanilla JS and Tailwind.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Terminal -->
+        <div id="window-terminal" class="window w-[600px] h-[400px]" style="top: 25%; left: 30%; z-index: 11;">
+            <div class="window-header bg-[#1e1e1e] border-b border-gray-700" onmousedown="startDrag(event, 'window-terminal')" ontouchstart="startDrag(event, 'window-terminal')">
+                <div class="window-controls">
+                    <div class="control-dot close-dot" onclick="closeWindow('window-terminal')"></div>
+                    <div class="control-dot min-dot"></div>
+                    <div class="control-dot max-dot"></div>
+                </div>
+                <span class="font-mono text-xs text-gray-400">jabez@system: ~</span>
+                <div class="w-8"></div>
+            </div>
+            <div class="window-content bg-[#0c0c0c] font-mono text-sm p-0">
+                <div class="p-4" id="terminal-output">
+                    <div class="mb-2 text-green-400">Welcome to Jabez Terminal v1.0</div>
+                    <div class="mb-4 text-gray-500">Type 'help' to see available commands.</div>
+                </div>
+                <div class="flex items-center px-4 pb-4">
+                    <span class="text-purple-500 mr-2">➜</span>
+                    <span class="text-blue-400 mr-2">~</span>
+                    <input type="text" id="terminal-input" class="bg-transparent border-none outline-none text-white w-full font-mono" autocomplete="off" spellcheck="false" autofocus>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Problems (Was Blog) -->
+        <div id="window-problems" class="window w-[550px] h-[650px]" style="top: 5%; left: 55%; z-index: 8;">
+            <div class="window-header" onmousedown="startDrag(event, 'window-problems')" ontouchstart="startDrag(event, 'window-problems')">
+                <div class="window-controls">
+                    <div class="control-dot close-dot" onclick="closeWindow('window-problems')"></div>
+                    <div class="control-dot min-dot"></div>
+                    <div class="control-dot max-dot"></div>
+                </div>
+                <span class="font-medium text-sm text-gray-300">Problems</span>
+                <div class="w-8"></div>
+            </div>
+            <div class="window-content bg-[#1c1c1c] text-gray-200 p-6">
+                <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                    <h2 class="text-xl font-bold">Latest Problems</h2>
+                </div>
+                <div id="problems-container" class="space-y-4">
+                    <p class="text-center text-gray-500 py-8" id="problems-status">Fetching latest problems...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Contact -->
+        <div id="window-contact" class="window w-[400px] h-[350px]" style="top: 30%; left: 40%; z-index: 12;">
+            <div class="window-header" onmousedown="startDrag(event, 'window-contact')" ontouchstart="startDrag(event, 'window-contact')">
+                <div class="window-controls">
+                    <div class="control-dot close-dot" onclick="closeWindow('window-contact')"></div>
+                    <div class="control-dot min-dot"></div>
+                    <div class="control-dot max-dot"></div>
+                </div>
+                <span class="font-medium text-sm text-gray-300">Contact</span>
+                <div class="w-8"></div>
+            </div>
+            <div class="window-content flex flex-col justify-center items-center text-center p-8">
+                <div class="w-20 h-20 bg-gradient-to-tr from-pink-500 to-orange-400 rounded-full flex items-center justify-center text-3xl mb-6 shadow-lg">
+                    👋
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Say Hello!</h2>
+                <p class="text-sm text-gray-400 mb-8 leading-relaxed">I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.</p>
+                
+                <a href="mailto:jabez@example.com" class="group relative inline-flex items-center justify-center px-8 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-600 font-pj rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 hover:bg-blue-500 w-full">
+                    Email Me
+                </a>
+                
+                <div class="flex gap-6 mt-8">
+                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-github text-2xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-linkedin text-2xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110"><i class="fab fa-twitter text-2xl"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- TASKBAR -->
+        <div id="taskbar">
+            <div class="app-icon" onclick="openWindow('window-about')" style="color: #3b82f6;">
+                <i class="fas fa-user-astronaut"></i>
+                <span class="app-tooltip">About</span>
+            </div>
+            <div class="app-icon" onclick="openWindow('window-projects')" style="color: #f59e0b;">
+                <i class="fas fa-layer-group"></i>
+                <span class="app-tooltip">Projects</span>
+            </div>
+            <div class="app-icon" onclick="openWindow('window-terminal')" style="color: #10b981;">
+                <i class="fas fa-terminal"></i>
+                <span class="app-tooltip">Terminal</span>
+            </div>
+            <div class="app-icon" onclick="openWindow('window-problems')" style="color: #ec4899;">
+                <!-- Updated Icon: Puzzle Piece -->
+                <i class="fas fa-puzzle-piece"></i>
+                <span class="app-tooltip">Problems</span>
+            </div>
+            <div class="app-icon" onclick="openWindow('window-contact')" style="color: #8b5cf6;">
+                <i class="fas fa-paper-plane"></i>
+                <span class="app-tooltip">Contact</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Confirmation Modal Structure (replaces alert/confirm) -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/70 items-center justify-center z-[1000] hidden">
+        <div id="modal-content" class="bg-gray-800 p-6 rounded-lg shadow-2xl text-center border border-white/10 w-96">
+            <!-- Content injected by showModal() -->
+        </div>
+    </div>
+
+
+    <script>
+        // --- RSS FEED LOGIC ---
+        // IMPORTANT: Update this URL if your RSS feed is hosted elsewhere!
+        const RSS_FEED_URL = 'https://jefrinjabez.pages.dev/index.xml';
+        const MAX_RETRIES = 3;
+
+        /**
+         * Fetches and parses the generated RSS XML file.
+         */
+        async function fetchAndParseRss(retryCount = 0) {
+            const statusEl = document.getElementById('problems-status');
+            const container = document.getElementById('problems-container');
+            
+            // Only show status text if the container is currently empty
+            if (container.children.length === 0 || container.querySelector('#problems-status')) {
+                statusEl.textContent = `Fetching latest problems...`;
+            }
+
+            try {
+                const response = await fetch(RSS_FEED_URL);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const xmlText = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "application/xml");
+                
+                // Check for XML parsing errors
+                if (xmlDoc.getElementsByTagName("parsererror").length) {
+                    console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
+                    throw new Error("Failed to parse data.");
+                }
+
+                const items = xmlDoc.querySelectorAll('item');
+                const articles = Array.from(items).map(item => ({
+                    title: item.querySelector('title')?.textContent.trim() || 'Untitled',
+                    link: item.querySelector('link')?.textContent.trim() || '#',
+                    description: item.querySelector('description')?.textContent.trim() || 'No summary available.',
+                    pubDate: item.querySelector('pubDate')?.textContent.trim() || null,
+                }));
+                
+                renderArticles(articles);
+                // Clear the status text as articles are now rendered
+                if (articles.length > 0) {
+                    // Check if status element still exists inside container before accessing textContent
+                     const existingStatus = document.getElementById('problems-status');
+                     if(existingStatus) existingStatus.remove();
+                } else {
+                    statusEl.textContent = "No problems found.";
+                }
+
+            } catch (error) {
+                console.error("Error fetching/parsing feed:", error);
+                
+                if (retryCount < MAX_RETRIES - 1) {
+                    const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchAndParseRss(retryCount + 1); // Retry
+                } else {
+                    statusEl.innerHTML = `
+                        <div class="text-red-400">Failed to load content.</div>
+                        <div class="text-xs text-gray-500 mt-1">Please try again later.</div>
+                    `;
+                }
+            }
+        }
+
+        /**
+         * Renders the articles onto the window.
+         * @param {Array<Object>} articles - The list of articles parsed from the XML.
+         */
+        function renderArticles(articles) {
+            const container = document.getElementById('problems-container');
+            container.innerHTML = ''; 
+
+            articles.forEach((article) => {
+                const articleElement = document.createElement('a');
+                articleElement.href = article.link;
+                articleElement.target = '_blank'; // Open in new tab
+                articleElement.className = 'group block bg-white/5 hover:bg-white/10 p-4 rounded-lg transition border border-transparent hover:border-white/10 cursor-pointer';
+                
+                // Safely format the date
+                let dateDisplay = '';
+                if (article.pubDate) {
+                    try {
+                        const date = new Date(article.pubDate);
+                        if (!isNaN(date)) {
+                            dateDisplay = date.toLocaleDateString();
+                        }
+                    } catch (e) {
+                        dateDisplay = article.pubDate;
+                    }
+                }
+
+                articleElement.innerHTML = `
+                    <div class="flex items-center gap-2 mb-2 text-xs text-pink-400">
+                        <span>${dateDisplay}</span>
+                    </div>
+                    <h3 class="font-bold text-lg text-white mb-2 group-hover:text-pink-300 transition">${article.title}</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed line-clamp-2">${article.description}</p>
+                `;
+                container.appendChild(articleElement);
+            });
+        }
+
+
+        // --- UTILITY: CUSTOM MODAL (Replaces alert/confirm) ---
+
+        const modal = document.getElementById('custom-modal');
+        const modalContent = document.getElementById('modal-content');
+
+        function showModal(title, message, type = 'info') {
+            const icon = type === 'success' ? '<i class="fas fa-check-circle text-green-500 text-3xl mb-3"></i>' :
+                         type === 'error' ? '<i class="fas fa-times-circle text-red-500 text-3xl mb-3"></i>' :
+                         '<i class="fas fa-info-circle text-blue-500 text-3xl mb-3"></i>';
+            const buttonColor = type === 'success' ? 'bg-green-600 hover:bg-green-500' : 
+                                type === 'error' ? 'bg-red-600 hover:bg-red-500' : 
+                                'bg-blue-600 hover:bg-blue-500';
+            
+            modalContent.innerHTML = `
+                ${icon}
+                <p class="text-lg font-semibold text-white">${title}</p>
+                <p class="text-sm text-gray-400 mt-1">${message}</p>
+                <button onclick="window.hideModal()" class="mt-4 ${buttonColor} text-white px-4 py-1 rounded transition">Close</button>
+            `;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        window.hideModal = function() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+
+        // --- CORE OS FUNCTIONS ---
+
+        let zIndexCounter = 20;
+
+        window.openWindow = function(id) {
+            const win = document.getElementById(id);
+            win.style.display = 'flex';
+            zIndexCounter++;
+            win.style.zIndex = zIndexCounter;
+            
+            // If opening the problems window, ensure data is loaded
+            if (id === 'window-problems' && document.getElementById('problems-container').children.length <= 1) {
+                 fetchAndParseRss();
+            }
+        }
+
+        window.closeWindow = function(id) {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        document.querySelectorAll('.window').forEach(win => {
+            win.addEventListener('mousedown', () => {
+                zIndexCounter++;
+                win.style.zIndex = zIndexCounter;
+            });
+        });
+
+        // DRAG & DROP LOGIC
+        let isDragging = false;
+        let currentWindow = null;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        window.startDrag = function(e, windowId) {
+            const win = document.getElementById(windowId);
+            const rect = win.getBoundingClientRect();
+            
+            if (e.type === "touchstart") {
+                xOffset = e.touches[0].clientX - rect.left;
+                yOffset = e.touches[0].clientY - rect.top;
+            } else {
+                xOffset = e.clientX - rect.left;
+                yOffset = e.clientY - rect.top;
+            }
+            
+            currentWindow = win;
+            isDragging = true;
+            zIndexCounter++;
+            currentWindow.style.zIndex = zIndexCounter;
+        }
+
+        function drag(e) {
+            if (isDragging && currentWindow) {
+                e.preventDefault();
+                let clientX, clientY;
+                
+                if(e.type === "touchmove") {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+
+                currentWindow.style.left = (clientX - xOffset) + "px";
+                currentWindow.style.top = (clientY - yOffset) + "px";
+                currentWindow.style.transform = "none"; 
+            }
+        }
+
+        function stopDrag() {
+            isDragging = false;
+            currentWindow = null;
+        }
+
+        document.addEventListener("mousemove", drag, false);
+        document.addEventListener("mouseup", stopDrag, false);
+        document.addEventListener("touchmove", drag, {passive: false});
+        document.addEventListener("touchend", stopDrag, false);
+
+
+        // TERMINAL LOGIC
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+
+        terminalInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim().toLowerCase();
+                const cmdLine = document.createElement('div');
+                cmdLine.innerHTML = `<span class="text-purple-500">➜</span> <span class="text-blue-400">~</span> <span class="text-white">${this.value}</span>`;
+                terminalOutput.appendChild(cmdLine);
+
+                const response = document.createElement('div');
+                response.className = 'mb-2 text-gray-300 whitespace-pre-wrap';
+                
+                switch(command) {
+                    case 'help':
+                        response.innerHTML = 'Available commands:\n- about: Who am I?\n- projects: List my work\n- problems: View problem set\n- contact: Get email\n- clear: Clear screen\n- date: Current time';
+                        break;
+                    case 'about':
+                        response.innerHTML = 'User: Jefrin Jabez Christian\nStatus: Student\nSystem: Jabez OS v1.0';
+                        break;
+                    case 'projects':
+                        response.innerHTML = '1. Project Alpha (Student Mgmt)\n2. Data Viz Tool (Python)\n3. Portfolio OS (Web)';
+                        break;
+                    case 'contact':
+                        response.innerHTML = 'Email: jabez@example.com';
+                        break;
+                    case 'problems':
+                        window.openWindow('window-problems');
+                        response.remove(); 
+                        break;
+                    case 'date':
+                        response.innerHTML = new Date().toString();
+                        break;
+                    case 'clear':
+                        terminalOutput.innerHTML = '';
+                        response.remove();
+                        break;
+                    case '':
+                        break;
+                    default:
+                        response.innerHTML = `Command not found: ${command}. Try 'help'.`;
+                        response.className = 'mb-2 text-red-400';
+                }
+
+                if(command !== 'clear' && command !== 'problems') terminalOutput.appendChild(response);
+                
+                const contentDiv = document.querySelector('#window-terminal .window-content');
+                contentDiv.scrollTop = contentDiv.scrollHeight;
+                this.value = '';
+            }
+        });
+        
+        document.querySelector('#window-terminal .window-content').addEventListener('click', () => terminalInput.focus());
+
+
+        // --- INITIALIZATION ---
+        
+        window.onload = function() {
+            // Start boot sequence animation and clock
+            startBootSequence();
+            setInterval(updateClock, 1000);
+            updateClock();
+            initCanvas();
+            animateStars();
+            
+            // Pre-load data when the OS starts (in the background)
+            fetchAndParseRss();
+        };
+
+        // --- BOOT SEQUENCE LOGIC ---
+        const bootText = [
+            "Initializing JABEZ_OS kernel...",
+            "Loading modules: desktop, terminal, problems...",
+            "Checking data integrity...",
+            "Establishing secure connection...",
+            "Access granted: Jefrin Jabez Christian",
+            "Starting desktop environment..."
+        ];
+
+        const bootScreen = document.getElementById('boot-screen');
+        const bootTextContainer = document.getElementById('boot-text');
+        const desktop = document.getElementById('desktop');
+        
+        function startBootSequence() {
+            let delay = 0;
+            bootText.forEach((line, index) => {
+                setTimeout(() => {
+                    const p = document.createElement('div');
+                    p.textContent = `> ${line}`;
+                    p.className = 'mb-1 text-green-500 font-mono';
+                    bootTextContainer.appendChild(p);
+                    bootScreen.scrollTop = bootScreen.scrollHeight;
+                }, delay);
+                delay += Math.random() * 300 + 150; 
+            });
+
+            setTimeout(() => {
+                bootScreen.style.opacity = '0';
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    desktop.style.opacity = '1';
+                }, 500);
+            }, delay + 500);
+        }
+
+        // CLOCK LOGIC
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateString = now.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+            document.getElementById('clock-time').textContent = timeString;
+            document.getElementById('clock-date').textContent = dateString;
+        }
+
+        // STARFIELD LOGIC
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+
+        function initCanvas() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            createStars();
+        }
+
+        function createStars() {
+            stars = [];
+            const starCount = 200;
+            for(let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 1.5,
+                    vx: Math.random() * 0.4 - 0.2,
+                    vy: Math.random() * 0.4 - 0.2,
+                    alpha: Math.random()
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, width, height);
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                ctx.fill();
+                star.x += star.vx;
+                star.y += star.vy;
+                
+                star.alpha += (Math.random() - 0.5) * 0.02;
+                if(star.alpha < 0.1) star.alpha = 0.1;
+                if(star.alpha > 0.8) star.alpha = 0.8;
+
+                if(star.x < 0) star.x = width;
+                if(star.x > width) star.x = 0;
+                if(star.y < 0) star.y = height;
+                if(star.y > height) star.y = 0;
+            });
+            requestAnimationFrame(animateStars);
+        }
+        window.addEventListener('resize', initCanvas);
+
+    </script>
+</body>
+</html>
