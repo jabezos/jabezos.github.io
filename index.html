@@ -295,14 +295,36 @@
             transform: translateX(0);
         }
 
-        /* Responsive */
+        /* Responsive Fixes */
         @media (max-width: 640px) {
-            .window { width: 92vw !important; height: 75vh !important; left: 4vw !important; top: 8vh !important; }
+            /* 1. Mobile Window Sizing */
+            .window { 
+                width: 96vw !important; 
+                height: 85vh !important; 
+                left: 2vw !important; 
+                top: 5vh !important; 
+                transform: none !important;
+            }
             .window.maximized { width: 100vw !important; height: 100vh !important; top: 0 !important; left: 0 !important; }
-            #taskbar { bottom: 12px; padding: 10px 16px; gap: 0.8rem; width: auto; max-width: 95%; }
+            
+            /* 2. Mobile Taskbar Visibility Fix */
+            #taskbar { 
+                bottom: 8px; /* Lower on the screen for better visibility */
+                padding: 10px 16px; 
+                gap: 0.8rem; 
+                width: auto; 
+                max-width: 98%; 
+                left: 50%;
+                transform: translateX(-50%);
+            }
             .app-icon { width: 42px; height: 42px; font-size: 1.25rem; }
             .window-content { padding: 1rem; }
             .app-tooltip { display: none; }
+            
+            /* 3. Hide Clock on Mobile */
+            #desktop .md\:block {
+                display: none !important;
+            }
         }
     </style>
 </head>
@@ -334,7 +356,7 @@
     <div id="desktop">
         <canvas id="starfield"></canvas>
 
-        <!-- Date/Time Widget -->
+        <!-- Date/Time Widget (Hidden on mobile via CSS media query) -->
         <div class="absolute top-8 right-8 text-right text-gray-300 font-light select-none z-0 hidden md:block">
             <div id="clock-time" class="text-4xl font-bold tracking-tight text-white drop-shadow-md">12:00</div>
             <div id="clock-date" class="text-sm font-medium uppercase tracking-widest opacity-80 mt-1">Monday, Jan 1</div>
@@ -837,6 +859,10 @@
         document.querySelectorAll('.window').forEach(win => {
             // Bring window to front on any click/touch
             win.addEventListener('mousedown', () => {
+                zIndexCounter++;
+                win.style.zIndex = zIndexCounter;
+            });
+             win.addEventListener('touchstart', () => {
                 zIndexCounter++;
                 win.style.zIndex = zIndexCounter;
             });
