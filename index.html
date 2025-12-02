@@ -60,6 +60,7 @@
             opacity: 0;
             transition: opacity 1.5s ease-in-out;
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
+            overflow: hidden;
         }
 
         /* Starfield Canvas */
@@ -72,10 +73,85 @@
             z-index: 0;
         }
 
+        /* Desktop Icons */
+        #desktop-icons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1;
+        }
+
+        .desktop-icon {
+            width: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .desktop-icon i {
+            font-size: 2.5rem;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+
+        .desktop-icon span {
+            font-size: 0.8rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+            line-height: 1.2;
+        }
+
+        /* Context Menu */
+        #context-menu {
+            position: fixed;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            width: 200px;
+            z-index: 9999;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding: 4px;
+        }
+
+        .ctx-item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #e2e8f0;
+        }
+
+        .ctx-item:hover {
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+        }
+
+        .ctx-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 4px 0;
+        }
+
         /* Windows */
         .window {
             position: absolute;
-            background: rgba(15, 23, 42, 0.9); /* Slightly more opaque for better readability */
+            background: rgba(15, 23, 42, 0.9);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--glass-border);
@@ -84,8 +160,17 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
-            transition: transform 0.1s, opacity 0.2s;
+            transition: opacity 0.2s, transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s;
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .window.maximized {
+            width: 100vw !important;
+            height: calc(100vh - 80px) !important; /* Leave space for taskbar */
+            top: 0 !important;
+            left: 0 !important;
+            border-radius: 0;
+            transform: none !important;
         }
 
         @keyframes popIn {
@@ -101,7 +186,7 @@
             justify-content: space-between;
             cursor: grab;
             border-bottom: 1px solid rgba(255,255,255,0.05);
-            touch-action: none; /* Crucial for touch dragging */
+            touch-action: none;
         }
 
         .window-header:active {
@@ -117,7 +202,7 @@
         .control-dot:hover { transform: scale(1.1); }
         .close-dot { background: #ff5f56; cursor: pointer; }
         .min-dot { background: #ffbd2e; cursor: pointer; }
-        .max-dot { background: #27c93f; }
+        .max-dot { background: #27c93f; cursor: pointer; }
 
         .window-content {
             flex: 1;
@@ -126,7 +211,6 @@
             color: #e2e8f0;
             font-size: 0.95rem;
             line-height: 1.6;
-            /* Enable smooth scrolling inside windows */
             -webkit-overflow-scrolling: touch; 
         }
 
@@ -159,6 +243,7 @@
             height: 52px;
             border-radius: 14px;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 1.6rem;
@@ -168,7 +253,6 @@
             cursor: pointer;
             background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
             box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            /* Prevent tap highlight color on mobile */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -177,6 +261,22 @@
             background: rgba(255,255,255,0.15);
             box-shadow: 0 10px 20px rgba(0,0,0,0.4);
             z-index: 10;
+        }
+
+        .app-indicator {
+            width: 4px;
+            height: 4px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 0 4px rgba(255,255,255,0.8);
+        }
+
+        .app-icon.active .app-indicator {
+            opacity: 1;
         }
 
         .app-tooltip {
@@ -201,23 +301,74 @@
             top: -55px;
         }
 
+        /* Notifications */
+        #notification-area {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none; /* Let clicks pass through empty space */
+        }
+
+        .toast {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 250px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
         /* Responsive */
         @media (max-width: 640px) {
-            /* Windows become almost full screen on mobile */
             .window { width: 92vw !important; height: 75vh !important; left: 4vw !important; top: 8vh !important; }
+            .window.maximized { width: 100vw !important; height: 100vh !important; top: 0 !important; left: 0 !important; }
             #taskbar { bottom: 12px; padding: 10px 16px; gap: 0.8rem; width: auto; max-width: 95%; }
             .app-icon { width: 42px; height: 42px; font-size: 1.25rem; }
             .window-content { padding: 1rem; }
-            .app-tooltip { display: none; } /* Hide tooltips on touch */
+            .app-tooltip { display: none; }
+            #desktop-icons { display: none; } /* Hide desktop icons on mobile for cleaner look */
         }
     </style>
 </head>
-<body>
+<body id="body">
 
     <!-- BOOT SCREEN -->
     <div id="boot-screen">
         <div id="boot-text" class="text-sm md:text-base leading-relaxed"></div>
     </div>
+
+    <!-- CONTEXT MENU -->
+    <div id="context-menu">
+        <div class="ctx-item" onclick="refreshDesktop()">
+            <i class="fas fa-sync-alt text-blue-400"></i> Refresh
+        </div>
+        <div class="ctx-item" onclick="changeWallpaper()">
+            <i class="fas fa-image text-purple-400"></i> Change Wallpaper
+        </div>
+        <div class="ctx-divider"></div>
+        <div class="ctx-item" onclick="handleTaskbarClick('window-about')">
+            <i class="fas fa-info-circle text-gray-400"></i> System Properties
+        </div>
+    </div>
+
+    <!-- NOTIFICATION AREA -->
+    <div id="notification-area"></div>
 
     <!-- DESKTOP -->
     <div id="desktop">
@@ -227,6 +378,22 @@
         <div class="absolute top-8 right-8 text-right text-gray-300 font-light select-none z-0 hidden md:block">
             <div id="clock-time" class="text-4xl font-bold tracking-tight text-white drop-shadow-md">12:00</div>
             <div id="clock-date" class="text-sm font-medium uppercase tracking-widest opacity-80 mt-1">Monday, Jan 1</div>
+        </div>
+
+        <!-- Desktop Icons -->
+        <div id="desktop-icons">
+            <div class="desktop-icon" onclick="handleTaskbarClick('window-about')">
+                <i class="fas fa-laptop text-blue-300"></i>
+                <span>This PC</span>
+            </div>
+            <div class="desktop-icon" onclick="handleTaskbarClick('window-projects')">
+                <i class="fas fa-folder text-yellow-400"></i>
+                <span>Projects</span>
+            </div>
+            <div class="desktop-icon" onclick="openTerminalCommand('clear')">
+                <i class="fas fa-trash-alt text-gray-400"></i>
+                <span>Recycle Bin</span>
+            </div>
         </div>
 
         <!-- CENTER BRANDING -->
@@ -248,8 +415,8 @@
             <div class="window-header" onmousedown="startDrag(event, 'window-about')" ontouchstart="startDrag(event, 'window-about')">
                 <div class="window-controls">
                     <div class="control-dot close-dot" onclick="closeWindow('window-about')"></div>
-                    <div class="control-dot min-dot"></div>
-                    <div class="control-dot max-dot"></div>
+                    <div class="control-dot min-dot" onclick="minimizeWindow('window-about')"></div>
+                    <div class="control-dot max-dot" onclick="toggleMaximize('window-about')"></div>
                 </div>
                 <span class="font-medium text-sm text-gray-300">About Me</span>
                 <div class="w-8"></div> 
@@ -285,8 +452,8 @@
             <div class="window-header" onmousedown="startDrag(event, 'window-projects')" ontouchstart="startDrag(event, 'window-projects')">
                 <div class="window-controls">
                     <div class="control-dot close-dot" onclick="closeWindow('window-projects')"></div>
-                    <div class="control-dot min-dot"></div>
-                    <div class="control-dot max-dot"></div>
+                    <div class="control-dot min-dot" onclick="minimizeWindow('window-projects')"></div>
+                    <div class="control-dot max-dot" onclick="toggleMaximize('window-projects')"></div>
                 </div>
                 <span class="font-medium text-sm text-gray-300">~/Projects</span>
                 <div class="w-8"></div>
@@ -335,8 +502,8 @@
             <div class="window-header bg-[#1e1e1e] border-b border-gray-700" onmousedown="startDrag(event, 'window-terminal')" ontouchstart="startDrag(event, 'window-terminal')">
                 <div class="window-controls">
                     <div class="control-dot close-dot" onclick="closeWindow('window-terminal')"></div>
-                    <div class="control-dot min-dot"></div>
-                    <div class="control-dot max-dot"></div>
+                    <div class="control-dot min-dot" onclick="minimizeWindow('window-terminal')"></div>
+                    <div class="control-dot max-dot" onclick="toggleMaximize('window-terminal')"></div>
                 </div>
                 <span class="font-mono text-xs text-gray-400">jabez@system: ~</span>
                 <div class="w-8"></div>
@@ -359,8 +526,8 @@
             <div class="window-header" onmousedown="startDrag(event, 'window-problems')" ontouchstart="startDrag(event, 'window-problems')">
                 <div class="window-controls">
                     <div class="control-dot close-dot" onclick="closeWindow('window-problems')"></div>
-                    <div class="control-dot min-dot"></div>
-                    <div class="control-dot max-dot"></div>
+                    <div class="control-dot min-dot" onclick="minimizeWindow('window-problems')"></div>
+                    <div class="control-dot max-dot" onclick="toggleMaximize('window-problems')"></div>
                 </div>
                 <span class="font-medium text-sm text-gray-300">Problems</span>
                 <div class="w-8"></div>
@@ -380,8 +547,8 @@
             <div class="window-header" onmousedown="startDrag(event, 'window-contact')" ontouchstart="startDrag(event, 'window-contact')">
                 <div class="window-controls">
                     <div class="control-dot close-dot" onclick="closeWindow('window-contact')"></div>
-                    <div class="control-dot min-dot"></div>
-                    <div class="control-dot max-dot"></div>
+                    <div class="control-dot min-dot" onclick="minimizeWindow('window-contact')"></div>
+                    <div class="control-dot max-dot" onclick="toggleMaximize('window-contact')"></div>
                 </div>
                 <span class="font-medium text-sm text-gray-300">Contact</span>
                 <div class="w-8"></div>
@@ -407,25 +574,29 @@
 
         <!-- TASKBAR -->
         <div id="taskbar">
-            <div class="app-icon" onclick="openWindow('window-about')" style="color: #3b82f6;">
+            <div class="app-icon" id="icon-about" onclick="handleTaskbarClick('window-about')" style="color: #3b82f6;">
                 <i class="fas fa-user-astronaut"></i>
+                <div class="app-indicator"></div>
                 <span class="app-tooltip">About</span>
             </div>
-            <div class="app-icon" onclick="openWindow('window-projects')" style="color: #f59e0b;">
+            <div class="app-icon" id="icon-projects" onclick="handleTaskbarClick('window-projects')" style="color: #f59e0b;">
                 <i class="fas fa-layer-group"></i>
+                <div class="app-indicator"></div>
                 <span class="app-tooltip">Projects</span>
             </div>
-            <div class="app-icon" onclick="openWindow('window-terminal')" style="color: #10b981;">
+            <div class="app-icon" id="icon-terminal" onclick="handleTaskbarClick('window-terminal')" style="color: #10b981;">
                 <i class="fas fa-terminal"></i>
+                <div class="app-indicator"></div>
                 <span class="app-tooltip">Terminal</span>
             </div>
-            <div class="app-icon" onclick="openWindow('window-problems')" style="color: #ec4899;">
-                <!-- Updated Icon: Puzzle Piece -->
+            <div class="app-icon" id="icon-problems" onclick="handleTaskbarClick('window-problems')" style="color: #ec4899;">
                 <i class="fas fa-puzzle-piece"></i>
+                <div class="app-indicator"></div>
                 <span class="app-tooltip">Problems</span>
             </div>
-            <div class="app-icon" onclick="openWindow('window-contact')" style="color: #8b5cf6;">
+            <div class="app-icon" id="icon-contact" onclick="handleTaskbarClick('window-contact')" style="color: #8b5cf6;">
                 <i class="fas fa-paper-plane"></i>
+                <div class="app-indicator"></div>
                 <span class="app-tooltip">Contact</span>
             </div>
         </div>
@@ -442,18 +613,13 @@
 
     <script>
         // --- RSS FEED LOGIC ---
-        // IMPORTANT: Update this URL if your RSS feed is hosted elsewhere!
         const RSS_FEED_URL = 'https://jefrinjabez.pages.dev/index.xml';
         const MAX_RETRIES = 3;
 
-        /**
-         * Fetches and parses the generated RSS XML file.
-         */
         async function fetchAndParseRss(retryCount = 0) {
             const statusEl = document.getElementById('problems-status');
             const container = document.getElementById('problems-container');
             
-            // Only show status text if the container is currently empty
             if (container.children.length === 0 || container.querySelector('#problems-status')) {
                 statusEl.textContent = `Fetching latest problems...`;
             }
@@ -469,7 +635,6 @@
                 const parser = new DOMParser();
                 const xmlDoc = parser.parseFromString(xmlText, "application/xml");
                 
-                // Check for XML parsing errors
                 if (xmlDoc.getElementsByTagName("parsererror").length) {
                     console.error("XML Parsing Error:", xmlDoc.getElementsByTagName("parsererror")[0].textContent);
                     throw new Error("Failed to parse data.");
@@ -484,9 +649,7 @@
                 }));
                 
                 renderArticles(articles);
-                // Clear the status text as articles are now rendered
                 if (articles.length > 0) {
-                    // Check if status element still exists inside container before accessing textContent
                      const existingStatus = document.getElementById('problems-status');
                      if(existingStatus) existingStatus.remove();
                 } else {
@@ -497,9 +660,9 @@
                 console.error("Error fetching/parsing feed:", error);
                 
                 if (retryCount < MAX_RETRIES - 1) {
-                    const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+                    const delay = Math.pow(2, retryCount) * 1000;
                     await new Promise(resolve => setTimeout(resolve, delay));
-                    return fetchAndParseRss(retryCount + 1); // Retry
+                    return fetchAndParseRss(retryCount + 1);
                 } else {
                     statusEl.innerHTML = `
                         <div class="text-red-400">Failed to load content.</div>
@@ -509,10 +672,6 @@
             }
         }
 
-        /**
-         * Renders the articles onto the window.
-         * @param {Array<Object>} articles - The list of articles parsed from the XML.
-         */
         function renderArticles(articles) {
             const container = document.getElementById('problems-container');
             container.innerHTML = ''; 
@@ -520,10 +679,9 @@
             articles.forEach((article) => {
                 const articleElement = document.createElement('a');
                 articleElement.href = article.link;
-                articleElement.target = '_blank'; // Open in new tab
+                articleElement.target = '_blank';
                 articleElement.className = 'group block bg-white/5 hover:bg-white/10 p-4 rounded-lg transition border border-transparent hover:border-white/10 cursor-pointer';
                 
-                // Safely format the date
                 let dateDisplay = '';
                 if (article.pubDate) {
                     try {
@@ -548,7 +706,7 @@
         }
 
 
-        // --- UTILITY: CUSTOM MODAL (Replaces alert/confirm) ---
+        // --- UTILITY: CUSTOM MODAL ---
 
         const modal = document.getElementById('custom-modal');
         const modalContent = document.getElementById('modal-content');
@@ -576,10 +734,64 @@
             modal.classList.remove('flex');
         }
 
+        // --- NOTIFICATIONS SYSTEM ---
+        function showNotification(message) {
+            const container = document.getElementById('notification-area');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `<i class="fas fa-bell text-yellow-400"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Trigger animation
+            requestAnimationFrame(() => {
+                toast.classList.add('show');
+            });
+
+            // Remove after delay
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
 
         // --- CORE OS FUNCTIONS ---
 
         let zIndexCounter = 20;
+
+        // Map window IDs to icon IDs
+        const windowIconMap = {
+            'window-about': 'icon-about',
+            'window-projects': 'icon-projects',
+            'window-terminal': 'icon-terminal',
+            'window-problems': 'icon-problems',
+            'window-contact': 'icon-contact'
+        };
+
+        // Smart Taskbar Handler
+        window.handleTaskbarClick = function(id) {
+            const win = document.getElementById(id);
+            const isClosed = win.style.display === 'none' || win.style.display === '';
+            
+            if (isClosed) {
+                // Open it
+                openWindow(id);
+            } else {
+                // It's open. Is it focused?
+                const isFocused = parseInt(win.style.zIndex) === zIndexCounter;
+                
+                if (isFocused) {
+                    // Minimize
+                    minimizeWindow(id);
+                } else {
+                    // Bring to front
+                    win.style.display = 'flex'; // Ensure visible if hidden
+                    zIndexCounter++;
+                    win.style.zIndex = zIndexCounter;
+                }
+            }
+        }
 
         window.openWindow = function(id) {
             const win = document.getElementById(id);
@@ -587,7 +799,13 @@
             zIndexCounter++;
             win.style.zIndex = zIndexCounter;
             
-            // If opening the problems window, ensure data is loaded
+            // Activate Icon Indicator
+            const iconId = windowIconMap[id];
+            if (iconId) {
+                document.getElementById(iconId).classList.add('active');
+            }
+            
+            // Special logic for problems
             if (id === 'window-problems' && document.getElementById('problems-container').children.length <= 1) {
                  fetchAndParseRss();
             }
@@ -595,8 +813,83 @@
 
         window.closeWindow = function(id) {
             document.getElementById(id).style.display = 'none';
+            // Deactivate Icon Indicator
+            const iconId = windowIconMap[id];
+            if (iconId) {
+                document.getElementById(iconId).classList.remove('active');
+            }
         }
 
+        window.minimizeWindow = function(id) {
+            const win = document.getElementById(id);
+            win.style.display = 'none';
+            // Note: We keep the icon active to show it's still "running" in background
+        }
+
+        window.toggleMaximize = function(id) {
+            const win = document.getElementById(id);
+            win.classList.toggle('maximized');
+        }
+        
+        // Terminal helper for recycle bin
+        window.openTerminalCommand = function(cmd) {
+            openWindow('window-terminal');
+            const input = document.getElementById('terminal-input');
+            input.value = cmd;
+            // Simulate Enter key
+            const event = new KeyboardEvent('keydown', {
+                key: 'Enter',
+                code: 'Enter',
+                which: 13,
+                keyCode: 13,
+            });
+            input.dispatchEvent(event);
+        }
+
+        // --- CONTEXT MENU ---
+        const desktop = document.getElementById('desktop');
+        const contextMenu = document.getElementById('context-menu');
+
+        desktop.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            // Basic boundary check
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            contextMenu.style.display = 'block';
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+        });
+
+        document.addEventListener('click', () => {
+            contextMenu.style.display = 'none';
+        });
+
+        window.refreshDesktop = function() {
+            document.body.style.opacity = '0.5';
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                showNotification("Desktop Refreshed");
+            }, 300);
+        }
+
+        const wallpapers = [
+            'radial-gradient(circle at center, #1e293b 0%, #020617 100%)',
+            'linear-gradient(to right, #24243e, #302b63, #0f0c29)',
+            'linear-gradient(to bottom, #000000, #434343)',
+            'radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%)'
+        ];
+        let currentWallpaper = 0;
+
+        window.changeWallpaper = function() {
+            currentWallpaper = (currentWallpaper + 1) % wallpapers.length;
+            desktop.style.background = wallpapers[currentWallpaper];
+            showNotification("Wallpaper Changed");
+        }
+
+
+        // --- DRAG & DROP LOGIC ---
+        // (Standard logic remains, ensuring z-index is handled)
         document.querySelectorAll('.window').forEach(win => {
             win.addEventListener('mousedown', () => {
                 zIndexCounter++;
@@ -604,7 +897,6 @@
             });
         });
 
-        // DRAG & DROP LOGIC
         let isDragging = false;
         let currentWindow = null;
         let xOffset = 0;
@@ -612,6 +904,9 @@
 
         window.startDrag = function(e, windowId) {
             const win = document.getElementById(windowId);
+            // Don't drag if maximized
+            if (win.classList.contains('maximized')) return;
+
             const rect = win.getBoundingClientRect();
             
             if (e.type === "touchstart") {
@@ -724,7 +1019,7 @@
             initCanvas();
             animateStars();
             
-            // Pre-load data when the OS starts (in the background)
+            // Pre-load data
             fetchAndParseRss();
         };
 
@@ -740,7 +1035,7 @@
 
         const bootScreen = document.getElementById('boot-screen');
         const bootTextContainer = document.getElementById('boot-text');
-        const desktop = document.getElementById('desktop');
+        const desktopBg = document.getElementById('desktop');
         
         function startBootSequence() {
             let delay = 0;
@@ -759,7 +1054,8 @@
                 bootScreen.style.opacity = '0';
                 setTimeout(() => {
                     bootScreen.style.display = 'none';
-                    desktop.style.opacity = '1';
+                    desktopBg.style.opacity = '1';
+                    showNotification("System Ready");
                 }, 500);
             }, delay + 500);
         }
