@@ -99,6 +99,37 @@
 
         /* --- UI ELEMENTS --- */
 
+        /* Start Menu */
+        #start-menu {
+            position: fixed;
+            bottom: 70px;
+            left: 10px;
+            width: 250px;
+            background: var(--window-bg);
+            border: 2px solid var(--neon-pink);
+            box-shadow: var(--hard-shadow) var(--neon-pink);
+            z-index: 10002;
+            display: none;
+            flex-direction: column;
+            padding: 10px;
+        }
+        
+        .start-item {
+            padding: 10px;
+            cursor: pointer;
+            color: white;
+            font-weight: bold;
+            border: 1px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .start-item:hover {
+            background: var(--neon-cyan);
+            color: black;
+            border: 1px solid white;
+        }
+
         /* Context Menu */
         #context-menu {
             position: fixed;
@@ -137,7 +168,6 @@
             display: none;
             flex-direction: column;
             overflow: hidden;
-            /* Removed transition for drag performance, added back in stopDrag */
             animation: glitchPop 0.2s steps(2);
         }
 
@@ -147,9 +177,10 @@
             100% { transform: scale(1) skew(0); }
         }
 
+        /* Adjusted maximized height for new fixed taskbar */
         .window.maximized {
             width: calc(100vw - 8px) !important;
-            height: calc(100vh - 100px) !important; /* Leave space for taskbar */
+            height: calc(100vh - 74px) !important; 
             top: 4px !important;
             left: 4px !important;
             box-shadow: none !important;
@@ -168,7 +199,7 @@
             color: black;
             font-weight: 800;
             text-transform: uppercase;
-            touch-action: none; /* Critical for dragging on mobile */
+            touch-action: none;
             user-select: none;
         }
 
@@ -211,25 +242,47 @@
         }
         .content-inner { position: relative; z-index: 3; } /* Content sits above scanlines */
 
-        /* Taskbar - Cyberpunk Style */
-        #taskbar-container {
-            position: absolute;
-            bottom: max(1rem, env(safe-area-inset-bottom) + 10px); /* Mobile safe area fix */
-            left: 50%;
-            transform: translateX(-50%);
-            width: auto;
-            max-width: 95vw;
+        /* TASKBAR - Full-width OS Style */
+        #taskbar {
+            position: fixed; /* Fixed to viewport bottom */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 64px; /* Fixed height for OS feel */
+            background: rgba(0, 0, 0, 0.95);
+            border-top: 2px solid var(--neon-cyan); /* Border on top edge only */
+            box-shadow: 0 -4px 10px rgba(0, 255, 255, 0.2); /* Subtle glow up */
+            padding: 0 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             z-index: 10000;
         }
 
-        #taskbar {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 4px 4px 0 var(--neon-cyan);
-            padding: 10px 20px;
+        #taskbar-left {
             display: flex;
-            gap: 20px;
             align-items: center;
+            gap: 15px;
+            height: 100%;
+        }
+
+        #taskbar-center-tray {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            height: 100%;
+        }
+        
+        #taskbar-sys-tray {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding-left: 15px;
+            border-left: 2px solid var(--neon-pink); /* Separator line */
+            background: #111;
+            gap: 15px;
+            cursor: default;
+            padding-right: 15px;
         }
 
         .app-icon {
@@ -240,7 +293,7 @@
             justify-content: center;
             font-size: 1.5rem;
             color: #555; /* Dimmed by default */
-            border: 2px solid transparent;
+            border-bottom: 4px solid transparent; /* Prepare for active state */
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
@@ -248,18 +301,14 @@
 
         .app-icon:hover {
             color: var(--neon-cyan);
-            transform: translateY(-4px);
-            text-shadow: 0 0 10px var(--neon-cyan);
+            transform: none;
+            text-shadow: 0 0 8px var(--neon-cyan);
         }
 
         .app-icon.active {
             color: var(--neon-pink);
-            border-bottom: 2px solid var(--neon-pink);
-        }
-
-        .app-icon.active:hover {
-            color: white;
-            border-bottom-color: white;
+            border-bottom: 4px solid var(--neon-pink); /* Stronger indicator */
+            box-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
         }
 
         /* Tooltips */
@@ -302,15 +351,43 @@
         }
         .toast.show { transform: translateX(0); }
 
-        /* Responsive Fixes */
+        /* Responsive Fixes - Mobile Dock Style */
         @media (max-width: 640px) {
             .window { width: 94vw !important; height: 80vh !important; left: 3vw !important; top: 5vh !important; }
-            .window.maximized { width: 100vw !important; height: 100vh !important; top: 0 !important; left: 0 !important; }
-            #taskbar { padding: 8px 12px; gap: 12px; }
-            .app-icon { width: 36px; height: 36px; font-size: 1.2rem; }
+            .window.maximized { width: 100vw !important; height: calc(100vh - 70px) !important; top: 0 !important; left: 0 !important; }
+            
+            /* Taskbar mobile adjustments */
+            #taskbar { 
+                height: 70px; 
+                padding: 0 10px; 
+                justify-content: center; /* Center the icons like a dock */
+                background: rgba(0,0,0,0.85);
+                backdrop-filter: blur(5px);
+                border-top: none;
+                border-radius: 15px 15px 0 0;
+            }
+            
+            #taskbar-left {
+                position: absolute;
+                left: 10px;
+            }
+
+            #taskbar-center-tray { 
+                gap: 15px; 
+            }
+            
+            /* Hide system tray on mobile to save space */
+            #taskbar-sys-tray { display: none; }
+            
+            .app-icon { width: 44px; height: 44px; font-size: 1.3rem; }
             .app-tooltip { display: none; }
-            /* Hide top-right text on mobile to save space */
-            #clock-widget { display: none; }
+
+            #start-menu {
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 90vw;
+            }
         }
     </style>
 </head>
@@ -335,6 +412,29 @@
         </div>
     </div>
 
+    <!-- START MENU -->
+    <div id="start-menu">
+        <div class="text-neon-pink font-bold border-b border-gray-700 pb-2 mb-2 tracking-widest text-sm">
+            SYSTEM // MENU
+        </div>
+        <div class="start-item" onclick="handleTaskbarClick('window-about'); toggleStartMenu();">
+            <i class="fas fa-user-circle"></i> ABOUT ME
+        </div>
+        <div class="start-item" onclick="refreshDesktop()">
+            <i class="fas fa-power-off"></i> REBOOT SYSTEM
+        </div>
+        <div class="start-item" onclick="changeWallpaper()">
+            <i class="fas fa-images"></i> CYCLE WALLPAPER
+        </div>
+        <div class="border-t border-gray-700 my-2"></div>
+        <div class="start-item" onclick="window.open('https://github.com', '_blank')">
+            <i class="fab fa-github"></i> GITHUB
+        </div>
+        <div class="start-item" onclick="window.open('https://linkedin.com', '_blank')">
+            <i class="fab fa-linkedin"></i> LINKEDIN
+        </div>
+    </div>
+
     <!-- NOTIFICATION AREA -->
     <div id="notification-area"></div>
 
@@ -342,12 +442,6 @@
     <div id="desktop">
         <div id="grid-bg"></div>
         <canvas id="starfield"></canvas>
-
-        <!-- Date/Time Widget -->
-        <div id="clock-widget" class="absolute top-8 right-8 text-right z-0 pointer-events-none">
-            <div id="clock-time" class="text-5xl font-black text-white tracking-tighter" style="text-shadow: 4px 4px 0 var(--neon-pink);">12:00</div>
-            <div id="clock-date" class="text-sm font-bold text-cyan-400 mt-1 uppercase tracking-widest bg-black inline-block px-2">Monday, Jan 1</div>
-        </div>
 
         <!-- CENTER BRANDING -->
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-0 select-none">
@@ -359,7 +453,7 @@
             </div>
         </div>
 
-        <!-- WINDOWS -->
+        <!-- WINDOWS (Minimized state is achieved by hiding, as per existing logic) -->
 
         <!-- 1. About Me -->
         <div id="window-about" class="window w-[650px] h-[450px]" style="top: 15%; left: 20%; z-index: 10;">
@@ -516,9 +610,20 @@
             </div>
         </div>
 
-        <!-- TASKBAR -->
-        <div id="taskbar-container">
-            <div id="taskbar">
+        <!-- TASKBAR - FULL WIDTH -->
+        <div id="taskbar">
+            <!-- Left: Start/System Button -->
+            <div id="taskbar-left">
+                <button id="startButton" class="app-icon flex items-center justify-center w-12 h-12 text-2xl" 
+                    style="color: var(--neon-pink); font-size: 1.8rem;" 
+                    title="SYS MENU" 
+                    onclick="toggleStartMenu()">
+                    <i class="fas fa-microchip"></i>
+                </button>
+            </div>
+
+            <!-- Center Tray: App Icons -->
+            <div id="taskbar-center-tray">
                 <div class="app-icon" id="icon-about" onclick="handleTaskbarClick('window-about')">
                     <i class="fas fa-user-astronaut"></i>
                     <span class="app-tooltip">ABOUT</span>
@@ -538,6 +643,24 @@
                 <div class="app-icon" id="icon-contact" onclick="handleTaskbarClick('window-contact')">
                     <i class="fas fa-satellite-dish"></i>
                     <span class="app-tooltip">COMMS</span>
+                </div>
+            </div>
+
+            <!-- Right: System Tray (Clock, Status) -->
+            <div id="taskbar-sys-tray">
+                <!-- Status Icons -->
+                <div class="flex items-center gap-4 border-r border-gray-700 pr-4 mr-2">
+                    <i class="fas fa-wifi text-cyan-400 text-sm hover:text-white cursor-pointer" title="Network Status: ONLINE"></i>
+                    <i class="fas fa-volume-up text-pink-400 text-sm hover:text-white cursor-pointer" title="Volume: 80%"></i>
+                </div>
+                <!-- Time & Date -->
+                <div class="flex flex-col items-end justify-center leading-tight">
+                    <div id="taskbar-time" class="text-white text-lg font-bold tracking-widest">
+                        --:--
+                    </div>
+                    <div id="taskbar-date" class="text-gray-400 text-xs font-bold uppercase tracking-wide">
+                        --- --
+                    </div>
                 </div>
             </div>
         </div>
@@ -577,12 +700,19 @@
                 }
 
                 const items = xmlDoc.querySelectorAll('item');
-                const articles = Array.from(items).map(item => ({
+                let articles = Array.from(items).map(item => ({
                     title: item.querySelector('title')?.textContent.trim() || 'UNTITLED_DATA',
                     link: item.querySelector('link')?.textContent.trim() || '#',
                     description: item.querySelector('description')?.textContent.trim() || 'No data.',
                     pubDate: item.querySelector('pubDate')?.textContent.trim() || null,
                 }));
+
+                // SORT: Newest first
+                articles.sort((a, b) => {
+                    const dateA = new Date(a.pubDate);
+                    const dateB = new Date(b.pubDate);
+                    return dateB - dateA;
+                });
                 
                 renderArticles(articles);
                 if (articles.length > 0 && document.getElementById('problems-status')) {
@@ -655,6 +785,30 @@
             setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
         }
 
+        // --- START MENU TOGGLE ---
+        function toggleStartMenu() {
+            const menu = document.getElementById('start-menu');
+            const btn = document.getElementById('startButton');
+            
+            if (menu.style.display === 'flex') {
+                menu.style.display = 'none';
+                btn.classList.remove('active');
+            } else {
+                menu.style.display = 'flex';
+                btn.classList.add('active');
+            }
+        }
+
+        // Close start menu when clicking outside
+        document.addEventListener('click', (e) => {
+            const menu = document.getElementById('start-menu');
+            const btn = document.getElementById('startButton');
+            if (menu.style.display === 'flex' && !menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.style.display = 'none';
+                btn.classList.remove('active');
+            }
+        });
+
         // --- WINDOW MANAGER & DRAG FIX ---
         let zIndexCounter = 20;
         const windowIconMap = {
@@ -708,168 +862,283 @@
         function onDragEnd() {
             if(dragWindow) {
                 // Re-enable transitions for maximize/minimize
-                dragWindow.style.transition = 'transform 0.2s, width 0.2s, height 0.2s, top 0.2s, left 0.2s, opacity 0.2s';
+                dragWindow.style.transition = '';
             }
             isDragging = false;
             dragWindow = null;
         }
 
+        // Attach global events
         document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('touchmove', onDragMove, {passive: false});
         document.addEventListener('mouseup', onDragEnd);
+        document.addEventListener('touchmove', onDragMove, {passive: false});
         document.addEventListener('touchend', onDragEnd);
 
-        // Window Controls
-        window.handleTaskbarClick = function(id) {
-            const win = document.getElementById(id);
-            const isClosed = win.style.display === 'none' || win.style.display === '';
-            
-            if (isClosed) {
-                openWindow(id);
-            } else {
-                if (parseInt(win.style.zIndex) === zIndexCounter) {
-                    minimizeWindow(id);
-                } else {
-                    win.style.display = 'flex';
-                    zIndexCounter++;
-                    win.style.zIndex = zIndexCounter;
-                }
-            }
-        }
-
+        // --- WINDOW OPERATIONS ---
+        
         window.openWindow = function(id) {
             const win = document.getElementById(id);
+            const iconId = windowIconMap[id];
+            const icon = document.getElementById(iconId);
+
             win.style.display = 'flex';
+            win.style.opacity = '0';
+            
+            // Bring to front
             zIndexCounter++;
             win.style.zIndex = zIndexCounter;
+
+            // Trigger Animation
+            setTimeout(() => {
+                win.style.opacity = '1';
+            }, 10);
+
+            if(icon) icon.classList.add('active');
             
-            const iconId = windowIconMap[id];
-            if(iconId) document.getElementById(iconId).classList.add('active');
-            
-            if (id === 'window-problems' && document.getElementById('problems-container').children.length <= 1) {
-                 fetchAndParseRss();
-            }
+            if(id === 'window-problems') fetchAndParseRss();
         }
 
         window.closeWindow = function(id) {
-            document.getElementById(id).style.display = 'none';
+            const win = document.getElementById(id);
             const iconId = windowIconMap[id];
-            if(iconId) document.getElementById(iconId).classList.remove('active');
-        }
+            const icon = document.getElementById(iconId);
 
-        window.minimizeWindow = function(id) {
-            document.getElementById(id).style.display = 'none';
+            win.style.display = 'none';
+            if(icon) icon.classList.remove('active');
         }
 
         window.toggleMaximize = function(id) {
-            document.getElementById(id).classList.toggle('maximized');
+            const win = document.getElementById(id);
+            win.classList.toggle('maximized');
+            // Bring to front on interaction
+            zIndexCounter++;
+            win.style.zIndex = zIndexCounter;
         }
 
-        // Terminal
-        document.getElementById('terminal-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const val = e.target.value.trim().toLowerCase();
-                const out = document.getElementById('terminal-output');
-                const line = document.createElement('div');
-                line.innerHTML = `<span class="text-purple-500">root@jabez:~$</span> ${val}`;
-                out.appendChild(line);
-                
-                let response = '';
-                if(val === 'help') response = 'CMDS: ABOUT, PROJECTS, PROBLEMS, CONTACT, CLEAR';
-                else if(val === 'about') response = 'EXEC: OPENING ABOUT...'; 
-                else if(val === 'clear') { out.innerHTML = ''; response = null; }
-                else if(val === 'problems') { window.openWindow('window-problems'); response = 'LAUNCHING...'; }
-                else response = 'ERR: COMMAND UNKNOWN';
-                
-                if(response) {
-                    const resDiv = document.createElement('div');
-                    resDiv.className = 'text-gray-400 mb-2';
-                    resDiv.textContent = response;
-                    out.appendChild(resDiv);
+        window.minimizeWindow = function(id) {
+            // Logic similar to closing, but maybe we keep state. For now, just hide.
+            const win = document.getElementById(id);
+            win.style.display = 'none';
+            // Note: Icon stays active in a real OS, but here we'll treat minimize as 'background'
+            const iconId = windowIconMap[id];
+            const icon = document.getElementById(iconId);
+            if (icon) icon.classList.add('active'); // Still running
+        }
+
+        window.handleTaskbarClick = function(id) {
+            const win = document.getElementById(id);
+            
+            if (win.style.display === 'flex' && !win.classList.contains('minimized')) {
+                // If top window, minimize. If behind, bring to front.
+                if (parseInt(win.style.zIndex) === zIndexCounter) {
+                    minimizeWindow(id);
+                } else {
+                    zIndexCounter++;
+                    win.style.zIndex = zIndexCounter;
                 }
-                
-                if(val === 'about') setTimeout(() => window.openWindow('window-about'), 500);
-                
-                e.target.value = '';
-                // Auto scroll
-                const content = document.querySelector('#window-terminal .window-content');
-                content.scrollTop = content.scrollHeight;
+            } else {
+                openWindow(id);
+            }
+        }
+
+        // --- TERMINAL LOGIC ---
+        const termInput = document.getElementById('terminal-input');
+        const termOutput = document.getElementById('terminal-output');
+
+        termInput.addEventListener('keydown', function(e) {
+            if(e.key === 'Enter') {
+                const cmd = this.value.trim().toLowerCase();
+                if(cmd) {
+                    printTerm(`root@jabez:~$ ${cmd}`);
+                    processCommand(cmd);
+                }
+                this.value = '';
+                // Keep scroll at bottom
+                const contentWin = document.querySelector('#window-terminal .window-content');
+                contentWin.scrollTop = contentWin.scrollHeight;
             }
         });
 
-        // Context Menu
+        function printTerm(text, isHtml = false) {
+            const line = document.createElement('div');
+            line.className = 'mb-1';
+            if(isHtml) line.innerHTML = text;
+            else line.textContent = text;
+            termOutput.appendChild(line);
+        }
+
+        function processCommand(cmd) {
+            switch(cmd) {
+                case 'help':
+                    printTerm('AVAILABLE COMMANDS: HELP, ABOUT, PROJECTS, PROBLEMS, CONTACT, CLEAR, DATE, REBOOT');
+                    break;
+                case 'about':
+                    printTerm('Launching ABOUT module...');
+                    openWindow('window-about');
+                    break;
+                case 'projects':
+                    printTerm('Mounting /PROJECTS...');
+                    openWindow('window-projects');
+                    break;
+                case 'problems':
+                    printTerm('Fetching feed...');
+                    openWindow('window-problems');
+                    break;
+                case 'contact':
+                    printTerm('Opening secure channel...');
+                    openWindow('window-contact');
+                    break;
+                case 'clear':
+                    termOutput.innerHTML = '';
+                    break;
+                case 'date':
+                    printTerm(new Date().toString());
+                    break;
+                case 'reboot':
+                    location.reload();
+                    break;
+                case 'sudo':
+                    printTerm('NICE TRY. PERMISSION DENIED.');
+                    break;
+                default:
+                    printTerm(`Command not found: ${cmd}. Type 'help'.`, false);
+            }
+        }
+
+        // Focus terminal when clicking anywhere in terminal window
+        document.getElementById('window-terminal').addEventListener('click', () => {
+            termInput.focus();
+        });
+
+        // --- CLOCK WIDGETS ---
+        function updateClock() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const dateStr = now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+            
+            // Taskbar time
+            const taskbarTimeEl = document.getElementById('taskbar-time');
+            if (taskbarTimeEl) taskbarTimeEl.textContent = timeStr;
+
+            // Taskbar date
+            const taskbarDateEl = document.getElementById('taskbar-date');
+            if (taskbarDateEl) taskbarDateEl.textContent = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // --- CONTEXT MENU ---
         const ctxMenu = document.getElementById('context-menu');
-        document.getElementById('desktop').addEventListener('contextmenu', (e) => {
+        
+        document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
             ctxMenu.style.display = 'block';
-            ctxMenu.style.left = e.clientX + 'px';
-            ctxMenu.style.top = e.clientY + 'px';
+            ctxMenu.style.left = `${e.clientX}px`;
+            ctxMenu.style.top = `${e.clientY}px`;
         });
-        document.addEventListener('click', () => ctxMenu.style.display = 'none');
+
+        document.addEventListener('click', (e) => {
+            if (!ctxMenu.contains(e.target)) ctxMenu.style.display = 'none';
+        });
 
         window.refreshDesktop = () => {
             document.body.style.opacity = '0';
-            setTimeout(() => { document.body.style.opacity = '1'; showNotification("SYS_REFRESH COMPLETE"); }, 500);
+            setTimeout(() => location.reload(), 500);
         }
-        
-        window.changeWallpaper = () => { showNotification("GRID_CYCLE: LOCKED"); }
 
-        // Boot
-        window.onload = function() {
-            const bootText = [ "BOOT_SEQ_INIT...", "LOADING_KERNEL...", "MOUNTING_FS...", "GRID_ESTABLISHED.", "WELCOME_USER" ];
-            const screen = document.getElementById('boot-screen');
-            const textDiv = document.getElementById('boot-text');
-            
-            let delay = 0;
-            bootText.forEach(txt => {
-                setTimeout(() => {
-                    const p = document.createElement('div');
-                    p.innerText = `> ${txt}`;
-                    textDiv.appendChild(p);
-                }, delay);
-                delay += 300;
-            });
-            
-            setTimeout(() => {
-                screen.style.display = 'none';
-                document.getElementById('desktop').style.opacity = '1';
-                showNotification("ONLINE");
-                fetchAndParseRss();
-            }, delay + 500);
-            
-            // Stars
-            const cvs = document.getElementById('starfield');
-            const ctx = cvs.getContext('2d');
-            let w, h, stars = [];
-            const init = () => {
-                w = window.innerWidth; h = window.innerHeight;
-                cvs.width = w; cvs.height = h;
-                stars = Array(150).fill().map(() => ({
-                    x: Math.random() * w, y: Math.random() * h,
-                    s: Math.random() * 2, a: Math.random()
-                }));
-            };
-            const anim = () => {
-                ctx.clearRect(0,0,w,h);
-                ctx.fillStyle = "white";
-                stars.forEach(s => {
-                    ctx.globalAlpha = s.a;
-                    ctx.fillRect(s.x, s.y, s.s, s.s); // Square stars for retro look
-                    s.a += (Math.random() - 0.5) * 0.1;
-                    if(s.a < 0) s.a = 0; if(s.a > 1) s.a = 1;
-                });
-                requestAnimationFrame(anim);
-            };
-            window.onresize = init;
-            init(); anim();
-            
-            // Clock
-            setInterval(() => {
-                const now = new Date();
-                document.getElementById('clock-time').innerText = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                document.getElementById('clock-date').innerText = now.toLocaleDateString([], {weekday:'long', month:'short', day:'numeric'});
-            }, 1000);
+        window.changeWallpaper = () => {
+            const grid = document.getElementById('grid-bg');
+            const colors = ['#ff00ff', '#00ffff', '#ffff00', '#00ff00'];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            grid.style.backgroundImage = `
+                linear-gradient(${randomColor} 1px, transparent 1px),
+                linear-gradient(90deg, ${randomColor} 1px, transparent 1px)
+            `;
         };
+
+        // --- STARFIELD BACKGROUND ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initStars();
+        }
+
+        function initStars() {
+            stars = [];
+            const numStars = Math.floor(window.innerWidth * window.innerHeight / 4000);
+            for(let i=0; i<numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 2,
+                    speed: Math.random() * 0.5 + 0.1
+                });
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            
+            stars.forEach(star => {
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                star.y -= star.speed;
+                if(star.y < 0) star.y = canvas.height;
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        animateStars();
+
+        // --- BOOT SEQUENCE ---
+        const bootText = document.getElementById('boot-text');
+        const bootLines = [
+            "BIOS DATE 01/01/25 15:22:11 VER 1.0.2",
+            "CPU: QUANTUM CORE i9 @ 80.5 GHZ",
+            "MEM: 1024 TB OK",
+            "DETECTING DRIVES... DONE",
+            "MOUNTING ROOT FILE SYSTEM... DONE",
+            "LOADING JABEZ_KERNEL... SUCCESS",
+            "INITIALIZING GRAPHICS SUBSYSTEM...",
+            "STARTING NETWORK DAEMONS...",
+            "ESTABLISHING SECURE LINK...",
+            "SYSTEM READY."
+        ];
+
+        let lineIndex = 0;
+
+        function typeWriter() {
+            if(lineIndex < bootLines.length) {
+                const line = document.createElement('div');
+                line.textContent = '> ' + bootLines[lineIndex];
+                bootText.appendChild(line);
+                lineIndex++;
+                setTimeout(typeWriter, Math.random() * 300 + 100);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('boot-screen').style.opacity = '0';
+                    document.getElementById('desktop').style.opacity = '1';
+                    setTimeout(() => document.getElementById('boot-screen').style.display = 'none', 500);
+                    // Open About Window by default
+                    setTimeout(() => openWindow('window-about'), 800);
+                    // Type welcome in terminal
+                    printTerm("Welcome to JabezOS. System ready.");
+                }, 800);
+            }
+        }
+
+        // Start Boot on Load
+        window.onload = typeWriter;
+
     </script>
 </body>
 </html>
