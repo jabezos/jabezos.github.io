@@ -15,13 +15,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* --- CYBER-BRUTALIST THEME --- */
+        /* --- CYBER-BRUTALIST THEME (Dynamic Variables) --- */
         :root {
             --bg-color: #050505;
             --window-bg: #0a0a0a;
-            --neon-pink: #ff00ff;
-            --neon-cyan: #00ffff;
-            --neon-yellow: #ffff00;
+            --primary-neon: #ff00ff; /* Border, Header, Main Accent (Pink by default) */
+            --secondary-neon: #00ffff; /* Grid, Highlight, Default Text (Cyan by default) */
             --border-width: 2px;
             --hard-shadow: 6px 6px 0px;
         }
@@ -31,7 +30,7 @@
             overflow: hidden;
             font-family: 'JetBrains Mono', monospace; /* Mono font everywhere */
             background-color: var(--bg-color);
-            color: var(--neon-cyan);
+            color: var(--secondary-neon); /* Use secondary neon for main text */
             user-select: none;
             overscroll-behavior: none;
         }
@@ -39,8 +38,8 @@
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #111; border-left: 1px solid #333; }
-        ::-webkit-scrollbar-thumb { background: var(--neon-pink); }
-        ::-webkit-scrollbar-thumb:hover { background: #d100d1; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-neon); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--secondary-neon); }
 
         /* Boot Screen */
         #boot-screen {
@@ -52,9 +51,9 @@
             display: flex;
             flex-direction: column;
             justify-content: flex-end; /* Terminal text at bottom */
-            color: var(--neon-pink);
+            color: var(--primary-neon); /* Use primary neon for boot text */
             font-size: 14px;
-            border: 4px solid var(--neon-pink); /* Retro border */
+            border: 4px solid var(--primary-neon); /* Retro border */
             box-sizing: border-box;
         }
 
@@ -76,8 +75,8 @@
             bottom: -50%; /* Tilt perspective */
             left: -50%;
             background-image: 
-                linear-gradient(var(--neon-pink) 1px, transparent 1px),
-                linear-gradient(90deg, var(--neon-pink) 1px, transparent 1px);
+                linear-gradient(var(--secondary-neon) 1px, transparent 1px),
+                linear-gradient(90deg, var(--secondary-neon) 1px, transparent 1px); /* Use secondary neon for grid */
             background-size: 40px 40px;
             background-position: center bottom;
             transform: perspective(500px) rotateX(60deg);
@@ -106,8 +105,8 @@
             left: 10px;
             width: 250px;
             background: var(--window-bg);
-            border: 2px solid var(--neon-pink);
-            box-shadow: var(--hard-shadow) var(--neon-pink);
+            border: 2px solid var(--primary-neon);
+            box-shadow: var(--hard-shadow) var(--primary-neon);
             z-index: 10002;
             display: none;
             flex-direction: column;
@@ -125,7 +124,7 @@
             gap: 10px;
         }
         .start-item:hover {
-            background: var(--neon-cyan);
+            background: var(--secondary-neon);
             color: black;
             border: 1px solid white;
         }
@@ -134,8 +133,8 @@
         #context-menu {
             position: fixed;
             background: var(--window-bg);
-            border: 2px solid var(--neon-cyan);
-            box-shadow: 4px 4px 0 var(--neon-cyan);
+            border: 2px solid var(--secondary-neon);
+            box-shadow: 4px 4px 0 var(--secondary-neon);
             min-width: 220px;
             z-index: 9999;
             display: none;
@@ -156,15 +155,15 @@
         }
 
         .ctx-item:last-child { border-bottom: none; }
-        .ctx-item:hover { background: var(--neon-cyan); color: black; }
+        .ctx-item:hover { background: var(--secondary-neon); color: black; }
         .ctx-item i { width: 20px; text-align: center; }
 
         /* Windows */
         .window {
             position: absolute;
             background: var(--window-bg);
-            border: 2px solid var(--neon-pink);
-            box-shadow: var(--hard-shadow) var(--neon-pink);
+            border: 2px solid var(--primary-neon);
+            box-shadow: var(--hard-shadow) var(--primary-neon);
             display: none;
             flex-direction: column;
             overflow: hidden;
@@ -189,13 +188,13 @@
         }
 
         .window-header {
-            background: var(--neon-pink);
+            background: var(--primary-neon);
             padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: grab;
-            border-bottom: 2px solid var(--neon-pink);
+            border-bottom: 2px solid var(--primary-neon);
             color: black;
             font-weight: 800;
             text-transform: uppercase;
@@ -218,7 +217,7 @@
         .win-btn:hover { transform: translate(1px, 1px); }
         .btn-close { background: #ff4444; }
         .btn-min { background: #ffff00; }
-        .btn-max { background: #00ffff; }
+        .btn-max { background: var(--secondary-neon); }
 
         .window-content {
             flex: 1;
@@ -250,13 +249,14 @@
             right: 0;
             height: 64px; /* Fixed height for OS feel */
             background: rgba(0, 0, 0, 0.95);
-            border-top: 2px solid var(--neon-cyan); /* Border on top edge only */
-            box-shadow: 0 -4px 10px rgba(0, 255, 255, 0.2); /* Subtle glow up */
+            border-top: 2px solid var(--secondary-neon); /* Border on top edge only */
+            box-shadow: 0 -4px 10px var(--secondary-neon, 0.2); /* Subtle glow up */
             padding: 0 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             z-index: 10000;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         #taskbar-left {
@@ -278,11 +278,12 @@
             display: flex;
             align-items: center;
             padding-left: 15px;
-            border-left: 2px solid var(--neon-pink); /* Separator line */
+            border-left: 2px solid var(--primary-neon); /* Separator line */
             background: #111;
             gap: 15px;
             cursor: default;
             padding-right: 15px;
+            transition: border-color 0.3s, background-color 0.3s;
         }
 
         .app-icon {
@@ -300,22 +301,22 @@
         }
 
         .app-icon:hover {
-            color: var(--neon-cyan);
+            color: var(--secondary-neon);
             transform: none;
-            text-shadow: 0 0 8px var(--neon-cyan);
+            text-shadow: 0 0 8px var(--secondary-neon);
         }
 
         .app-icon.active {
-            color: var(--neon-pink);
-            border-bottom: 4px solid var(--neon-pink); /* Stronger indicator */
-            box-shadow: 0 0 5px rgba(255, 0, 255, 0.5);
+            color: var(--primary-neon);
+            border-bottom: 4px solid var(--primary-neon); /* Stronger indicator */
+            box-shadow: 0 0 5px var(--primary-neon, 0.5);
         }
 
         /* Tooltips */
         .app-tooltip {
             position: absolute;
             top: -50px;
-            background: var(--neon-yellow);
+            background: var(--primary-neon);
             color: black;
             padding: 4px 8px;
             font-weight: bold;
@@ -338,10 +339,10 @@
 
         .toast {
             background: black;
-            border: 2px solid var(--neon-yellow);
-            color: var(--neon-yellow);
+            border: 2px solid var(--primary-neon);
+            color: var(--primary-neon);
             padding: 15px;
-            box-shadow: 4px 4px 0 var(--neon-yellow);
+            box-shadow: 4px 4px 0 var(--primary-neon);
             font-weight: bold;
             min-width: 280px;
             transform: translateX(120%);
@@ -351,6 +352,18 @@
         }
         .toast.show { transform: translateX(0); }
 
+        /* Center Branding (uses gradients tied to neon colors) */
+        .system-title {
+            text-shadow: 4px 4px 0 var(--primary-neon);
+            transition: text-shadow 0.3s;
+        }
+        
+        .system-subtitle {
+            border: 1px solid var(--secondary-neon);
+            color: var(--secondary-neon);
+            transition: border-color 0.3s, color 0.3s;
+        }
+        
         /* Responsive Fixes - Mobile Dock Style */
         @media (max-width: 640px) {
             .window { width: 94vw !important; height: 80vh !important; left: 3vw !important; top: 5vh !important; }
@@ -403,8 +416,9 @@
         <div class="ctx-item" onclick="refreshDesktop()">
             <i class="fas fa-sync-alt"></i> REBOOT UI
         </div>
+        <!-- Cycle now uses the updated function to change the whole theme -->
         <div class="ctx-item" onclick="changeWallpaper()">
-            <i class="fas fa-image"></i> CYCLE GRID
+            <i class="fas fa-image"></i> CYCLE THEME
         </div>
         <div class="ctx-divider"></div>
         <div class="ctx-item" onclick="handleTaskbarClick('window-about')">
@@ -414,17 +428,19 @@
 
     <!-- START MENU -->
     <div id="start-menu">
-        <div class="text-neon-pink font-bold border-b border-gray-700 pb-2 mb-2 tracking-widest text-sm">
+        <div class="text-white font-bold border-b border-gray-700 pb-2 mb-2 tracking-widest text-sm">
             SYSTEM // MENU
         </div>
         <div class="start-item" onclick="handleTaskbarClick('window-about'); toggleStartMenu();">
             <i class="fas fa-user-circle"></i> ABOUT ME
         </div>
+        <!-- Reboot System -->
         <div class="start-item" onclick="refreshDesktop()">
             <i class="fas fa-power-off"></i> REBOOT SYSTEM
         </div>
-        <div class="start-item" onclick="changeWallpaper()">
-            <i class="fas fa-images"></i> CYCLE WALLPAPER
+        <!-- Cycle Wallpaper (Theme) -->
+        <div class="start-item" onclick="changeWallpaper(); toggleStartMenu();">
+            <i class="fas fa-images"></i> CYCLE THEME
         </div>
         <div class="border-t border-gray-700 my-2"></div>
         <div class="start-item" onclick="window.open('https://github.com', '_blank')">
@@ -443,13 +459,13 @@
         <div id="grid-bg"></div>
         <canvas id="starfield"></canvas>
 
-        <!-- CENTER BRANDING -->
+        <!-- CENTER BRANDING (Updated to use dynamic classes) -->
         <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none z-0 select-none">
-            <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 drop-shadow-[4px_4px_0_rgba(255,0,255,1)]">
+            <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400 system-title">
                 JABEZ
             </h1>
-            <div class="mt-4 inline-block bg-black border border-cyan-400 px-4 py-1">
-                <p class="text-lg md:text-xl text-cyan-400 font-bold tracking-widest uppercase">Student // Developer</p>
+            <div class="mt-4 inline-block bg-black border px-4 py-1 system-subtitle">
+                <p class="text-lg md:text-xl font-bold tracking-widest uppercase">Student // Developer</p>
             </div>
         </div>
 
@@ -472,7 +488,8 @@
                     </div>
                     <div>
                         <h2 class="text-3xl font-bold text-white mb-2 uppercase">Jefrin Jabez</h2>
-                        <p class="text-neon-cyan font-bold mb-4">Class: Student | Spec: Physics/Dev</p>
+                        <!-- Text uses current secondary neon color via CSS variable -->
+                        <p class="font-bold mb-4" style="color: var(--secondary-neon);">Class: Student | Spec: Physics/Dev</p>
                         <p class="text-gray-300 leading-relaxed mb-6 text-sm">
                             &gt; INITIALIZING BIO...<br>
                             &gt; SUBJECT IS A STUDENT PASSIONATE ABOUT PHYSICS AND CODING.<br>
@@ -481,7 +498,8 @@
                         </p>
                         
                         <div class="border border-gray-700 p-3 bg-black/50">
-                            <h3 class="text-xs font-bold text-pink-500 uppercase tracking-wider mb-2">[ SKILLSET ]</h3>
+                            <!-- Text uses current primary neon color via CSS variable -->
+                            <h3 class="text-xs font-bold uppercase tracking-wider mb-2" style="color: var(--primary-neon);">[ SKILLSET ]</h3>
                             <div class="flex flex-wrap gap-2">
                                 <span class="px-2 py-1 bg-pink-600 text-black font-bold text-xs">WEB_DEV</span>
                                 <span class="px-2 py-1 bg-cyan-600 text-black font-bold text-xs">PHYSICS</span>
@@ -506,7 +524,7 @@
             <div class="window-content">
                 <div class="content-inner grid grid-cols-1 md:grid-cols-2 gap-5">
                     <!-- Project Card -->
-                    <div class="group border border-gray-700 hover:border-cyan-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                    <div class="group border border-gray-700 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]" style="--tw-border-opacity: 1; border-color: rgba(107, 114, 128, var(--tw-border-opacity));" onmouseover="this.style.borderColor = 'var(--primary-neon)'" onmouseout="this.style.borderColor = 'rgb(55, 65, 81)'">
                         <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
                             <span class="text-4xl">🚀</span>
                         </div>
@@ -514,7 +532,7 @@
                         <p class="text-xs text-gray-400 mt-2">Comprehensive student management system. Stack: MERN.</p>
                     </div>
 
-                    <div class="group border border-gray-700 hover:border-pink-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                    <div class="group border border-gray-700 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]" style="--tw-border-opacity: 1; border-color: rgba(107, 114, 128, var(--tw-border-opacity));" onmouseover="this.style.borderColor = 'var(--secondary-neon)'" onmouseout="this.style.borderColor = 'rgb(55, 65, 81)'">
                         <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
                             <span class="text-4xl">🔮</span>
                         </div>
@@ -522,7 +540,7 @@
                         <p class="text-xs text-gray-400 mt-2">Visualizing complex datasets with Python/D3.</p>
                     </div>
                     
-                    <div class="group border border-gray-700 hover:border-yellow-400 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]">
+                    <div class="group border border-gray-700 bg-black/40 p-4 transition-all hover:translate-x-1 hover:translate-y-1 hover:shadow-none shadow-[4px_4px_0_#333]" style="--tw-border-opacity: 1; border-color: rgba(107, 114, 128, var(--tw-border-opacity));" onmouseover="this.style.borderColor = 'var(--primary-neon)'" onmouseout="this.style.borderColor = 'rgb(55, 65, 81)'">
                         <div class="h-32 bg-gray-900 border-b border-gray-700 mb-3 flex items-center justify-center">
                             <span class="text-4xl">💻</span>
                         </div>
@@ -573,7 +591,7 @@
                         <h2 class="text-xl font-bold text-white">FEED_INCOMING...</h2>
                     </div>
                     <div id="problems-container" class="space-y-4">
-                        <p class="text-center text-pink-500 py-8 font-bold animate-pulse" id="problems-status">CONNECTING TO QUARTZ NODE...</p>
+                        <p class="text-center py-8 font-bold animate-pulse" id="problems-status" style="color: var(--primary-neon);">CONNECTING TO QUARTZ NODE...</p>
                     </div>
                 </div>
             </div>
@@ -597,7 +615,7 @@
                     <h2 class="text-2xl font-bold mb-2 text-white">OPEN CHANNEL</h2>
                     <p class="text-sm text-gray-400 mb-8">TRANSMIT MESSAGE TO OPERATOR?</p>
                     
-                    <a href="mailto:jabez@example.com" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase border-2 border-blue-400 hover:border-white transition">
+                    <a href="mailto:jabez@example.com" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 uppercase border-2 hover:border-white transition" style="border-color: var(--primary-neon);">
                         [ SEND EMAIL ]
                     </a>
                     
@@ -615,7 +633,7 @@
             <!-- Left: Start/System Button -->
             <div id="taskbar-left">
                 <button id="startButton" class="app-icon flex items-center justify-center w-12 h-12 text-2xl" 
-                    style="color: var(--neon-pink); font-size: 1.8rem;" 
+                    style="color: var(--primary-neon); font-size: 1.8rem;" 
                     title="SYS MENU" 
                     onclick="toggleStartMenu()">
                     <i class="fas fa-microchip"></i>
@@ -669,480 +687,554 @@
 
     <!-- NOTIFICATION -->
     <div id="custom-modal" class="fixed inset-0 bg-black/80 items-center justify-center z-[1000] hidden">
-        <div id="modal-content" class="bg-black border-4 border-yellow-500 p-6 w-80 text-center shadow-[8px_8px_0_#aa0]">
+        <div id="modal-content" class="bg-black border-4 p-6 w-80 text-center shadow-[8px_8px_0_#aa0]" style="border-color: var(--primary-neon);">
             <!-- Content injected -->
         </div>
     </div>
 
     <script>
-        // --- RSS FEED LOGIC ---
-        const RSS_FEED_URL = 'https://jefrinjabez.pages.dev/index.xml';
-        const MAX_RETRIES = 3;
+        // --- THEME & COLOR SCHEME LOGIC ---
+        const colorSchemes = [
+            // I. CyberPink (Original Default)
+            { name: 'CyberPink', primary: '#ff00ff', secondary: '#00ffff', windowBg: '#0a0a0a' },
+            // II. GlitchYellow
+            { name: 'GlitchYellow', primary: '#ffff00', secondary: '#ff4500', windowBg: '#141414' },
+            // III. TechGreen
+            { name: 'TechGreen', primary: '#00ff00', secondary: '#ff00ff', windowBg: '#080808' },
+            // IV. DeepBlue
+            { name: 'DeepBlue', primary: '#4a4aff', secondary: '#ff0000', windowBg: '#050510' },
+        ];
+        let currentSchemeIndex = 0; 
+        
+        /**
+         * Applies the colors of the current scheme to the CSS variables in :root.
+         */
+        function applyScheme(index) {
+            const scheme = colorSchemes[index];
+            const root = document.documentElement;
 
-        async function fetchAndParseRss(retryCount = 0) {
-            const statusEl = document.getElementById('problems-status');
-            const container = document.getElementById('problems-container');
+            root.style.setProperty('--primary-neon', scheme.primary);
+            root.style.setProperty('--secondary-neon', scheme.secondary);
+            root.style.setProperty('--window-bg', scheme.windowBg);
             
-            if (container.children.length === 0 || container.querySelector('#problems-status')) {
-                statusEl.textContent = `SCANNING... [ATTEMPT ${retryCount+1}]`;
+            showToast(`THEME: ${scheme.name} loaded.`, 'fas fa-palette', scheme.primary);
+
+            // Special handling for the Terminal window color change
+            const terminalWindow = document.getElementById('window-terminal');
+            if (terminalWindow) {
+                const header = terminalWindow.querySelector('.window-header');
+                if (header) {
+                     // Since the terminal has its own hardcoded retro green theme, we skip 
+                     // changing it to maintain the terminal aesthetic, but we update the 
+                     // window border to match the primary theme color.
+                     terminalWindow.style.borderColor = scheme.primary;
+                     terminalWindow.style.boxShadow = `var(--hard-shadow) ${scheme.primary}`;
+                }
             }
 
-            try {
-                const response = await fetch(RSS_FEED_URL);
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "application/xml");
-                
-                if (xmlDoc.getElementsByTagName("parsererror").length) {
-                    throw new Error("Data Corruption Detected");
-                }
-
-                const items = xmlDoc.querySelectorAll('item');
-                let articles = Array.from(items).map(item => ({
-                    title: item.querySelector('title')?.textContent.trim() || 'UNTITLED_DATA',
-                    link: item.querySelector('link')?.textContent.trim() || '#',
-                    description: item.querySelector('description')?.textContent.trim() || 'No data.',
-                    pubDate: item.querySelector('pubDate')?.textContent.trim() || null,
-                }));
-
-                // SORT: Newest first
-                articles.sort((a, b) => {
-                    const dateA = new Date(a.pubDate);
-                    const dateB = new Date(b.pubDate);
-                    return dateB - dateA;
-                });
-                
-                renderArticles(articles);
-                if (articles.length > 0 && document.getElementById('problems-status')) {
-                     document.getElementById('problems-status').remove();
-                } else if (articles.length === 0) {
-                    statusEl.textContent = "NO DATA FOUND.";
-                }
-
-            } catch (error) {
-                console.error("Feed Error:", error);
-                if (retryCount < MAX_RETRIES - 1) {
-                    setTimeout(() => fetchAndParseRss(retryCount + 1), 1000 * Math.pow(2, retryCount));
-                } else {
-                    statusEl.innerHTML = `<span class="text-red-500">CONNECTION FAILED.<br>MANUAL RETRY REQUIRED.</span>`;
-                }
+            // Update Start Button color directly as it uses a mix of variables and inline style
+            const startButton = document.getElementById('startButton');
+            if (startButton) {
+                startButton.style.color = scheme.primary;
             }
         }
 
-        function renderArticles(articles) {
-            const container = document.getElementById('problems-container');
-            container.innerHTML = ''; 
-
-            articles.forEach((article) => {
-                const articleElement = document.createElement('a');
-                articleElement.href = article.link;
-                articleElement.target = '_blank';
-                articleElement.className = 'group block border border-gray-600 bg-black/50 p-3 hover:border-pink-500 hover:bg-pink-900/20 transition cursor-pointer';
-                
-                let dateDisplay = '';
-                if (article.pubDate) {
-                    const date = new Date(article.pubDate);
-                    dateDisplay = !isNaN(date) ? date.toLocaleDateString() : article.pubDate;
-                }
-
-                articleElement.innerHTML = `
-                    <div class="flex items-center gap-2 mb-1 text-xs text-pink-500 font-bold">
-                        <span>[ ${dateDisplay} ]</span>
-                    </div>
-                    <h3 class="font-bold text-white text-md uppercase mb-1 group-hover:text-cyan-400">${article.title}</h3>
-                    <p class="text-xs text-gray-400 line-clamp-2 font-mono">${article.description}</p>
-                `;
-                container.appendChild(articleElement);
-            });
+        /**
+         * Cycles to the next theme in the array.
+         */
+        function changeWallpaper() {
+            currentSchemeIndex = (currentSchemeIndex + 1) % colorSchemes.length;
+            applyScheme(currentSchemeIndex);
         }
 
-        // --- UTILITY MODAL ---
-        function showModal(title, message, type='info') {
-            const modal = document.getElementById('custom-modal');
-            const content = document.getElementById('modal-content');
-            const colorClass = type === 'error' ? 'text-red-500' : 'text-yellow-500';
+        // --- WINDOW MANAGEMENT LOGIC ---
+        let zIndexCounter = 100;
+        const desktop = document.getElementById('desktop');
+        const windows = document.querySelectorAll('.window');
+        const taskbarIcons = document.querySelectorAll('#taskbar-center-tray .app-icon');
+        const minimizedWindows = {}; // Store {windowId: {top, left, width, height}}
+
+        function bringToFront(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+            windowEl.style.zIndex = ++zIndexCounter;
             
-            content.innerHTML = `
-                <h2 class="text-xl font-black uppercase mb-2 ${colorClass}">${title}</h2>
-                <p class="text-sm text-white mb-6 font-mono">${message}</p>
-                <button onclick="document.getElementById('custom-modal').classList.add('hidden'); document.getElementById('custom-modal').classList.remove('flex');" class="bg-white text-black font-bold px-6 py-2 hover:bg-gray-300 uppercase">
-                    Acknowledge
-                </button>
-            `;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+            // Remove active class from all icons
+            taskbarIcons.forEach(icon => icon.classList.remove('active'));
+            // Add active class to the current icon
+            const iconId = 'icon-' + windowId.split('-')[1];
+            document.getElementById(iconId)?.classList.add('active');
         }
 
-        function showNotification(message) {
-            const container = document.getElementById('notification-area');
+        function openWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+
+            windowEl.style.display = 'flex';
+            windowEl.classList.remove('minimized');
+
+            // Restore from minimized if state exists
+            if (minimizedWindows[windowId]) {
+                const { top, left, width, height } = minimizedWindows[windowId];
+                windowEl.style.top = top;
+                windowEl.style.left = left;
+                windowEl.style.width = width;
+                windowEl.style.height = height;
+                delete minimizedWindows[windowId]; // Clear minimized state
+            }
+            
+            bringToFront(windowId);
+        }
+
+        function closeWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+
+            windowEl.style.display = 'none';
+            // Remove active class from the icon
+            const iconId = 'icon-' + windowId.split('-')[1];
+            document.getElementById(iconId)?.classList.remove('active');
+            delete minimizedWindows[windowId];
+        }
+
+        function minimizeWindow(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+            
+            // Save current position and size before hiding
+            minimizedWindows[windowId] = {
+                top: windowEl.style.top,
+                left: windowEl.style.left,
+                width: windowEl.style.width,
+                height: windowEl.style.height
+            };
+
+            windowEl.style.display = 'none';
+            windowEl.classList.add('minimized');
+            // Remove active class from the icon
+            const iconId = 'icon-' + windowId.split('-')[1];
+            document.getElementById(iconId)?.classList.remove('active');
+        }
+
+        function toggleMaximize(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+
+            if (windowEl.classList.contains('maximized')) {
+                windowEl.classList.remove('maximized');
+                // Restore from saved minimized state, if it exists, otherwise just center it (optional)
+                if (minimizedWindows[windowId]) {
+                    const { top, left, width, height } = minimizedWindows[windowId];
+                    windowEl.style.top = top;
+                    windowEl.style.left = left;
+                    windowEl.style.width = width;
+                    windowEl.style.height = height;
+                    delete minimizedWindows[windowId];
+                }
+            } else {
+                // Save current state before maximizing for restoration
+                minimizedWindows[windowId] = {
+                    top: windowEl.style.top,
+                    left: windowEl.style.left,
+                    width: windowEl.style.width,
+                    height: windowEl.style.height
+                };
+                windowEl.classList.add('maximized');
+            }
+            bringToFront(windowId);
+        }
+
+        function handleTaskbarClick(windowId) {
+            const windowEl = document.getElementById(windowId);
+            if (!windowEl) return;
+            
+            if (windowEl.style.display === 'flex' && windowEl.style.zIndex == zIndexCounter) {
+                // If currently visible and top-most, minimize it
+                minimizeWindow(windowId);
+            } else {
+                // Otherwise, open it or bring it to front
+                openWindow(windowId);
+            }
+        }
+        
+        // --- DRAG LOGIC (Pointer Events) ---
+        let activeWindow = null;
+        let initialX, initialY, currentX, currentY, xOffset = 0, yOffset = 0;
+
+        function startDrag(e, windowId) {
+            // Prevent text selection
+            e.preventDefault(); 
+            e.stopPropagation();
+
+            const windowEl = document.getElementById(windowId);
+            if (windowEl.classList.contains('maximized')) return; // Cannot drag maximized window
+
+            activeWindow = windowEl;
+            bringToFront(windowId);
+
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+
+            initialX = clientX;
+            initialY = clientY;
+            xOffset = clientX - windowEl.offsetLeft;
+            yOffset = clientY - windowEl.offsetTop;
+
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('mouseup', endDrag);
+            document.addEventListener('touchmove', drag);
+            document.addEventListener('touchend', endDrag);
+        }
+
+        function drag(e) {
+            if (activeWindow) {
+                e.preventDefault();
+                
+                const clientX = e.clientX || e.touches[0].clientX;
+                const clientY = e.clientY || e.touches[0].clientY;
+
+                currentX = clientX - xOffset;
+                currentY = clientY - yOffset;
+
+                // Simple boundary check to prevent window from fully leaving the screen
+                const maxX = window.innerWidth - activeWindow.offsetWidth;
+                const maxY = window.innerHeight - activeWindow.offsetHeight;
+
+                currentX = Math.max(0, Math.min(currentX, maxX));
+                currentY = Math.max(0, Math.min(currentY, maxY));
+                
+                activeWindow.style.left = currentX + "px";
+                activeWindow.style.top = currentY + "px";
+            }
+        }
+
+        function endDrag() {
+            activeWindow = null;
+            document.removeEventListener('mousemove', drag);
+            document.removeEventListener('mouseup', endDrag);
+            document.removeEventListener('touchmove', drag);
+            document.removeEventListener('touchend', endDrag);
+        }
+
+        // --- CONTEXT MENU LOGIC (Right Click) ---
+
+        const contextMenu = document.getElementById('context-menu');
+        desktop.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); // Prevent default browser context menu
+            contextMenu.style.display = 'block';
+            
+            // Position the menu, ensure it stays on screen
+            let x = e.clientX;
+            let y = e.clientY;
+            
+            const menuWidth = contextMenu.offsetWidth;
+            const menuHeight = contextMenu.offsetHeight;
+
+            if (x + menuWidth > window.innerWidth) {
+                x = window.innerWidth - menuWidth - 5;
+            }
+            if (y + menuHeight > window.innerHeight) {
+                y = window.innerHeight - menuHeight - 5;
+            }
+
+            contextMenu.style.left = x + 'px';
+            contextMenu.style.top = y + 'px';
+            bringToFront('context-menu'); // Make sure it's on top
+        });
+
+        document.addEventListener('click', (e) => {
+            if (contextMenu.style.display === 'block') {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // --- START MENU LOGIC ---
+        const startMenu = document.getElementById('start-menu');
+        function toggleStartMenu() {
+            if (startMenu.style.display === 'flex') {
+                startMenu.style.display = 'none';
+                document.getElementById('startButton').classList.remove('active');
+            } else {
+                startMenu.style.display = 'flex';
+                document.getElementById('startButton').classList.add('active');
+                bringToFront('start-menu');
+            }
+        }
+        
+        // Close start menu if clicking outside
+        document.addEventListener('click', (e) => {
+            if (startMenu.style.display === 'flex' && !startMenu.contains(e.target) && !document.getElementById('startButton').contains(e.target)) {
+                toggleStartMenu();
+            }
+        });
+
+
+        // --- NOTIFICATION / TOASTS ---
+        function showToast(message, iconClass, color) {
+            const area = document.getElementById('notification-area');
             const toast = document.createElement('div');
             toast.className = 'toast';
-            toast.innerHTML = `<i class="fas fa-exclamation-triangle"></i> <span>${message}</span>`;
-            container.appendChild(toast);
-            requestAnimationFrame(() => toast.classList.add('show'));
-            setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 3000);
-        }
-
-        // --- START MENU TOGGLE ---
-        function toggleStartMenu() {
-            const menu = document.getElementById('start-menu');
-            const btn = document.getElementById('startButton');
+            toast.innerHTML = `<i class="${iconClass} text-xl" style="color: ${color};"></i> <div>${message}</div>`;
             
-            if (menu.style.display === 'flex') {
-                menu.style.display = 'none';
-                btn.classList.remove('active');
-            } else {
-                menu.style.display = 'flex';
-                btn.classList.add('active');
-            }
+            // Set toast color dynamically
+            toast.style.borderColor = color;
+            toast.style.color = color;
+            toast.style.boxShadow = `4px 4px 0 ${color}`;
+
+            area.prepend(toast);
+            
+            // Animate in
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Animate out and remove
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => area.removeChild(toast), 300); // Wait for transition
+            }, 4000);
         }
 
-        // Close start menu when clicking outside
-        document.addEventListener('click', (e) => {
-            const menu = document.getElementById('start-menu');
-            const btn = document.getElementById('startButton');
-            if (menu.style.display === 'flex' && !menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.style.display = 'none';
-                btn.classList.remove('active');
-            }
-        });
+        // --- SYSTEM TRAY CLOCK ---
+        function updateClock() {
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            const date = now.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
+            
+            document.getElementById('taskbar-time').textContent = time;
+            document.getElementById('taskbar-date').textContent = date.toUpperCase().replace(/\./g, '');
+        }
 
-        // --- WINDOW MANAGER & DRAG FIX ---
-        let zIndexCounter = 20;
-        const windowIconMap = {
-            'window-about': 'icon-about', 'window-projects': 'icon-projects',
-            'window-terminal': 'icon-terminal', 'window-problems': 'icon-problems', 'window-contact': 'icon-contact'
+        // --- TERMINAL SIMULATION LOGIC ---
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalOutput = document.getElementById('terminal-output');
+        
+        const commands = {
+            'help': 'Available commands: about, projects, contact, clear, theme, reboot, status.',
+            'about': 'Opening SYS_INFO (About Me) window...',
+            'projects': 'Accessing DIR: PROJECTS...',
+            'contact': 'Initializing COMMS_LINK...',
+            'clear': '', // handled directly
+            'theme': 'Cycling to the next system theme...',
+            'reboot': 'Initiating UI reboot sequence...',
+            'status': 'System Status: Nominal. Network: [ONLINE]. Memory: [OPTIMIZED].',
         };
 
-        // Improved Drag Logic
-        let isDragging = false;
-        let dragWindow = null;
-        let dragOffsetX = 0;
-        let dragOffsetY = 0;
-
-        window.startDrag = function(e, id) {
-            // Check if user is clicking a button (like close/minimize)
-            if (e.target.closest('.window-controls') || e.target.classList.contains('win-btn')) {
-                return; // Let the click event proceed naturally
-            }
-
-            const win = document.getElementById(id);
-            if(win.classList.contains('maximized')) return;
+        function processCommand(input) {
+            const cleanInput = input.trim().toLowerCase();
+            const outputLine = document.createElement('div');
+            outputLine.innerHTML = `root@jabez:~$ ${input}`;
+            terminalOutput.appendChild(outputLine);
             
-            e.preventDefault(); // Stop text selection/scrolling
-            
-            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            
-            const rect = win.getBoundingClientRect();
-            dragOffsetX = clientX - rect.left;
-            dragOffsetY = clientY - rect.top;
-            
-            dragWindow = win;
-            isDragging = true;
-            
-            // Bring to front
-            zIndexCounter++;
-            win.style.zIndex = zIndexCounter;
-            
-            // Disable transition for instant follow
-            win.style.transition = 'none';
-        }
+            const responseLine = document.createElement('div');
+            responseLine.className = 'text-yellow-500';
 
-        function onDragMove(e) {
-            if(!isDragging || !dragWindow) return;
-            e.preventDefault();
-            
-            const clientX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
-            
-            dragWindow.style.left = (clientX - dragOffsetX) + 'px';
-            dragWindow.style.top = (clientY - dragOffsetY) + 'px';
-            // Clear transform from open animation
-            dragWindow.style.transform = 'none';
-        }
-
-        function onDragEnd() {
-            if(dragWindow) {
-                // Re-enable transitions for maximize/minimize
-                dragWindow.style.transition = '';
-            }
-            isDragging = false;
-            dragWindow = null;
-        }
-
-        // Attach global events
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('mouseup', onDragEnd);
-        document.addEventListener('touchmove', onDragMove, {passive: false});
-        document.addEventListener('touchend', onDragEnd);
-
-        // --- WINDOW OPERATIONS ---
-        
-        window.openWindow = function(id) {
-            const win = document.getElementById(id);
-            const iconId = windowIconMap[id];
-            const icon = document.getElementById(iconId);
-
-            win.style.display = 'flex';
-            win.style.opacity = '0';
-            
-            // Bring to front
-            zIndexCounter++;
-            win.style.zIndex = zIndexCounter;
-
-            // Trigger Animation
-            setTimeout(() => {
-                win.style.opacity = '1';
-            }, 10);
-
-            if(icon) icon.classList.add('active');
-            
-            if(id === 'window-problems') fetchAndParseRss();
-        }
-
-        window.closeWindow = function(id) {
-            const win = document.getElementById(id);
-            const iconId = windowIconMap[id];
-            const icon = document.getElementById(iconId);
-
-            win.style.display = 'none';
-            if(icon) icon.classList.remove('active');
-        }
-
-        window.toggleMaximize = function(id) {
-            const win = document.getElementById(id);
-            win.classList.toggle('maximized');
-            // Bring to front on interaction
-            zIndexCounter++;
-            win.style.zIndex = zIndexCounter;
-        }
-
-        window.minimizeWindow = function(id) {
-            // Logic similar to closing, but maybe we keep state. For now, just hide.
-            const win = document.getElementById(id);
-            win.style.display = 'none';
-            // Note: Icon stays active in a real OS, but here we'll treat minimize as 'background'
-            const iconId = windowIconMap[id];
-            const icon = document.getElementById(iconId);
-            if (icon) icon.classList.add('active'); // Still running
-        }
-
-        window.handleTaskbarClick = function(id) {
-            const win = document.getElementById(id);
-            
-            if (win.style.display === 'flex' && !win.classList.contains('minimized')) {
-                // If top window, minimize. If behind, bring to front.
-                if (parseInt(win.style.zIndex) === zIndexCounter) {
-                    minimizeWindow(id);
-                } else {
-                    zIndexCounter++;
-                    win.style.zIndex = zIndexCounter;
-                }
-            } else {
-                openWindow(id);
-            }
-        }
-
-        // --- TERMINAL LOGIC ---
-        const termInput = document.getElementById('terminal-input');
-        const termOutput = document.getElementById('terminal-output');
-
-        termInput.addEventListener('keydown', function(e) {
-            if(e.key === 'Enter') {
-                const cmd = this.value.trim().toLowerCase();
-                if(cmd) {
-                    printTerm(`root@jabez:~$ ${cmd}`);
-                    processCommand(cmd);
-                }
-                this.value = '';
-                // Keep scroll at bottom
-                const contentWin = document.querySelector('#window-terminal .window-content');
-                contentWin.scrollTop = contentWin.scrollHeight;
-            }
-        });
-
-        function printTerm(text, isHtml = false) {
-            const line = document.createElement('div');
-            line.className = 'mb-1';
-            if(isHtml) line.innerHTML = text;
-            else line.textContent = text;
-            termOutput.appendChild(line);
-        }
-
-        function processCommand(cmd) {
-            switch(cmd) {
-                case 'help':
-                    printTerm('AVAILABLE COMMANDS: HELP, ABOUT, PROJECTS, PROBLEMS, CONTACT, CLEAR, DATE, REBOOT');
-                    break;
+            switch (cleanInput) {
                 case 'about':
-                    printTerm('Launching ABOUT module...');
+                    responseLine.textContent = commands.about;
                     openWindow('window-about');
                     break;
                 case 'projects':
-                    printTerm('Mounting /PROJECTS...');
+                    responseLine.textContent = commands.projects;
                     openWindow('window-projects');
                     break;
-                case 'problems':
-                    printTerm('Fetching feed...');
-                    openWindow('window-problems');
-                    break;
                 case 'contact':
-                    printTerm('Opening secure channel...');
+                    responseLine.textContent = commands.contact;
                     openWindow('window-contact');
                     break;
                 case 'clear':
-                    termOutput.innerHTML = '';
-                    break;
-                case 'date':
-                    printTerm(new Date().toString());
+                    // Clear all but the header
+                    terminalOutput.innerHTML = terminalOutput.innerHTML.split('</div>')[0] + '</div>' + terminalOutput.innerHTML.split('</div>')[1] + '</div>';
+                    terminalOutput.scrollTop = terminalOutput.scrollHeight;
+                    return; // Don't append response line
+                case 'theme':
+                    responseLine.textContent = commands.theme;
+                    changeWallpaper();
                     break;
                 case 'reboot':
-                    location.reload();
+                    responseLine.textContent = commands.reboot;
+                    setTimeout(refreshDesktop, 1500);
                     break;
-                case 'sudo':
-                    printTerm('NICE TRY. PERMISSION DENIED.');
+                case 'status':
+                    responseLine.textContent = commands.status;
                     break;
                 default:
-                    printTerm(`Command not found: ${cmd}. Type 'help'.`, false);
+                    responseLine.textContent = commands[cleanInput] || `Error: Command '${cleanInput}' not found. Type 'help'.`;
             }
-        }
-
-        // Focus terminal when clicking anywhere in terminal window
-        document.getElementById('window-terminal').addEventListener('click', () => {
-            termInput.focus();
-        });
-
-        // --- CLOCK WIDGETS ---
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
             
-            // Taskbar time
-            const taskbarTimeEl = document.getElementById('taskbar-time');
-            if (taskbarTimeEl) taskbarTimeEl.textContent = timeStr;
-
-            // Taskbar date
-            const taskbarDateEl = document.getElementById('taskbar-date');
-            if (taskbarDateEl) taskbarDateEl.textContent = dateStr;
+            terminalOutput.appendChild(responseLine);
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
         }
-        setInterval(updateClock, 1000);
-        updateClock();
 
-        // --- CONTEXT MENU ---
-        const ctxMenu = document.getElementById('context-menu');
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const command = terminalInput.value;
+                processCommand(command);
+                terminalInput.value = '';
+            }
+        });
+
+        // --- BOOT SEQUENCE ---
+        const bootTextElement = document.getElementById('boot-text');
+        const bootScreen = document.getElementById('boot-screen');
+        const desktopElement = document.getElementById('desktop');
         
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            ctxMenu.style.display = 'block';
-            ctxMenu.style.left = `${e.clientX}px`;
-            ctxMenu.style.top = `${e.clientY}px`;
-        });
+        const bootMessages = [
+            'INITIATING JABEZ_OS CORE v2.5...',
+            'LOADING KERNEL MODULES...',
+            'VERIFYING DATA INTEGRITY... [OK]',
+            'ALLOCATING MEMORY BLOCKS... [100%]',
+            'STARTING GRAPHICS ENGINE...',
+            'ESTABLISHING NETWORK LINK... [ONLINE]',
+            'LOADING USER ENVIRONMENT...',
+            'LOGIN SUCCESSFUL. WELCOME, OPERATOR.',
+            'ACCESS GRANTED.',
+        ];
 
-        document.addEventListener('click', (e) => {
-            if (!ctxMenu.contains(e.target)) ctxMenu.style.display = 'none';
-        });
-
-        window.refreshDesktop = () => {
-            document.body.style.opacity = '0';
-            setTimeout(() => location.reload(), 500);
+        function runBootSequence() {
+            let i = 0;
+            const interval = setInterval(() => {
+                if (i < bootMessages.length) {
+                    bootTextElement.innerHTML += `\n> ${bootMessages[i]}`;
+                    bootTextElement.scrollTop = bootTextElement.scrollHeight;
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        bootScreen.style.opacity = '0';
+                        desktopElement.style.opacity = '1';
+                        bootScreen.style.zIndex = -1;
+                        openWindow('window-about'); // Open a default window
+                        openWindow('window-terminal');
+                        openWindow('window-problems');
+                        showToast('System Startup Complete.', 'fas fa-check-circle', colorSchemes[currentSchemeIndex].primary);
+                    }, 500);
+                }
+            }, 300);
         }
 
-        window.changeWallpaper = () => {
-            const grid = document.getElementById('grid-bg');
-            const colors = ['#ff00ff', '#00ffff', '#ffff00', '#00ff00'];
-            const randomColor = colors[Math.floor(Math.random() * colors.length)];
-            grid.style.backgroundImage = `
-                linear-gradient(${randomColor} 1px, transparent 1px),
-                linear-gradient(90deg, ${randomColor} 1px, transparent 1px)
-            `;
-        };
+        function refreshDesktop() {
+            bootScreen.style.opacity = '1';
+            bootScreen.style.zIndex = '9999';
+            desktopElement.style.opacity = '0';
+            bootTextElement.innerHTML = '';
+            
+            // Close all windows
+            windows.forEach(win => closeWindow(win.id));
 
-        // --- STARFIELD BACKGROUND ---
+            // Reset theme
+            currentSchemeIndex = 0;
+            applyScheme(currentSchemeIndex);
+
+            // Re-run boot sequence
+            setTimeout(runBootSequence, 500);
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = function() {
+            // 1. Set initial theme
+            applyScheme(currentSchemeIndex);
+            // 2. Start clock
+            setInterval(updateClock, 1000);
+            updateClock();
+            // 3. Run boot sequence
+            runBootSequence();
+            // 4. Set problems status simulation (non-functional for demo)
+            simulateProblemsFeed();
+        }
+
+        // --- Starfield (from previous version) ---
         const canvas = document.getElementById('starfield');
         const ctx = canvas.getContext('2d');
         let stars = [];
+        const numStars = 200;
 
         function resizeCanvas() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            initStars();
-        }
-
-        function initStars() {
-            stars = [];
-            const numStars = Math.floor(window.innerWidth * window.innerHeight / 4000);
-            for(let i=0; i<numStars; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 2,
-                    speed: Math.random() * 0.5 + 0.1
-                });
-            }
-        }
-
-        function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#fff';
-            
-            stars.forEach(star => {
-                ctx.beginPath();
-                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                ctx.fill();
-                
-                star.y -= star.speed;
-                if(star.y < 0) star.y = canvas.height;
-            });
-            requestAnimationFrame(animateStars);
         }
 
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
-        animateStars();
 
-        // --- BOOT SEQUENCE ---
-        const bootText = document.getElementById('boot-text');
-        const bootLines = [
-            "BIOS DATE 01/01/25 15:22:11 VER 1.0.2",
-            "CPU: QUANTUM CORE i9 @ 80.5 GHZ",
-            "MEM: 1024 TB OK",
-            "DETECTING DRIVES... DONE",
-            "MOUNTING ROOT FILE SYSTEM... DONE",
-            "LOADING JABEZ_KERNEL... SUCCESS",
-            "INITIALIZING GRAPHICS SUBSYSTEM...",
-            "STARTING NETWORK DAEMONS...",
-            "ESTABLISHING SECURE LINK...",
-            "SYSTEM READY."
-        ];
-
-        let lineIndex = 0;
-
-        function typeWriter() {
-            if(lineIndex < bootLines.length) {
-                const line = document.createElement('div');
-                line.textContent = '> ' + bootLines[lineIndex];
-                bootText.appendChild(line);
-                lineIndex++;
-                setTimeout(typeWriter, Math.random() * 300 + 100);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('boot-screen').style.opacity = '0';
-                    document.getElementById('desktop').style.opacity = '1';
-                    setTimeout(() => document.getElementById('boot-screen').style.display = 'none', 500);
-                    // Open About Window by default
-                    setTimeout(() => openWindow('window-about'), 800);
-                    // Type welcome in terminal
-                    printTerm("Welcome to JabezOS. System ready.");
-                }, 800);
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.5,
+                    vx: (Math.random() - 0.5) * 0.1,
+                    vy: (Math.random() - 0.5) * 0.1
+                });
             }
         }
 
-        // Start Boot on Load
-        window.onload = typeWriter;
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#fff';
+            
+            stars.forEach(star => {
+                star.x += star.vx;
+                star.y += star.vy;
+
+                // Wrap stars around the screen
+                if (star.x < 0) star.x = canvas.width;
+                if (star.x > canvas.width) star.x = 0;
+                if (star.y < 0) star.y = canvas.height;
+                if (star.y > canvas.height) star.y = 0;
+
+                ctx.beginPath();
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        function animateStars() {
+            drawStars();
+            requestAnimationFrame(animateStars);
+        }
+
+        initStars();
+        animateStars();
+
+        // --- Problems Feed Simulation (Static content) ---
+        const problemsData = [
+            { type: 'Alert', title: 'Critical Bug Found', desc: 'Cross-site scripting vulnerability detected in legacy module.', color: '#ff4444' },
+            { type: 'Feature', title: 'New Core Feature', desc: 'Implementing multi-threading support for Physics Solver.', color: '#ffff00' },
+            { type: 'Research', title: 'Quantum Entanglement', desc: 'Analyzing recent simulation results for non-local correlations.', color: '#00ffff' },
+            { type: 'Feature', title: 'UI/UX Polish', desc: 'Finalizing the cyber-brutalist aesthetic with global theme cycling.', color: '#ff00ff' },
+        ];
+
+        function createProblemCard(problem) {
+            // Note: This needs to be styled to use the current theme colors for borders
+            return `
+                <div class="border p-4 transition-all hover:translate-y-[-2px] hover:shadow-xl" 
+                    style="border-color: var(--secondary-neon); box-shadow: 4px 4px 0 var(--primary-neon);">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-bold uppercase px-2 py-1 bg-black text-white" style="border: 1px solid ${problem.color}; color: ${problem.color};">${problem.type}</span>
+                        <i class="fas fa-arrow-right" style="color: var(--secondary-neon);"></i>
+                    </div>
+                    <h3 class="text-white text-lg font-bold">${problem.title}</h3>
+                    <p class="text-gray-400 text-sm">${problem.desc}</p>
+                </div>
+            `;
+        }
+
+        function simulateProblemsFeed() {
+            const container = document.getElementById('problems-container');
+            const status = document.getElementById('problems-status');
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+                container.innerHTML = problemsData.map(createProblemCard).join('');
+            }, 2000);
+        }
+
+        // Attach event listeners for window focusing on click
+        windows.forEach(windowEl => {
+            windowEl.addEventListener('mousedown', () => bringToFront(windowEl.id));
+            windowEl.addEventListener('touchstart', () => bringToFront(windowEl.id));
+        });
 
     </script>
 </body>
