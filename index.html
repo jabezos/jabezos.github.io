@@ -823,6 +823,11 @@
         let dragOffsetY = 0;
 
         window.startDrag = function(e, id) {
+            // Check if user is clicking a button (like close/minimize)
+            if (e.target.closest('.window-controls') || e.target.classList.contains('win-btn')) {
+                return; // Let the click event proceed naturally
+            }
+
             const win = document.getElementById(id);
             if(win.classList.contains('maximized')) return;
             
